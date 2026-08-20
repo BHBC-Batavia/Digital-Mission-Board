@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BHBC World Missions</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.12.0/maplibre-gl.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.12.0/maplibre-gl.min.js"></script>
+<style>
+  :root{
+    --navy:#1B4265;
+    --navy-deep:#0F2A42;
+    --silver:#B3B3B3;
+    --smoke:#767676;
+    --dust:#A19586;
+    --parchment:#F3EEE4;
+    --red:#A5372B;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{ width:100%; height:100%; font-family:'Poppins', sans-serif; background:var(--navy-deep); overflow:hidden; }
+
+  .app{ position:relative; width:100vw; height:100vh; }
+
+  /* ---------- Header ---------- */
+  .header{
+    position:absolute; top:0; left:0; right:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:clamp(14px,2.4vh,26px) clamp(20px,4vw,56px);
+    background:linear-gradient(180deg, rgba(15,42,66,0.92) 0%, rgba(15,42,66,0) 100%);
+    pointer-events:none;
+  }
+  .header *{ pointer-events:auto; }
+  .brand{ display:flex; flex-direction:column; }
+  .brand .mark{
+    font-family:'Crimson Text', serif; font-weight:600;
+    font-size:clamp(18px,2vw,24px); color:var(--parchment); letter-spacing:0.01em;
+  }
+  .brand .sub{
+    font-size:clamp(9px,0.8vw,11px); letter-spacing:0.28em; text-transform:uppercase;
+    color:var(--silver); margin-top:3px;
+  }
+  .stat{
+    font-size:clamp(10px,0.9vw,12.5px); letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--silver); text-align:right; line-height:1.6;
+  }
+  .stat b{ color:var(--parchment); font-weight:500; }
+
+  /* ---------- Map ---------- */
+  #map{ position:absolute; inset:0; }
+  .maplibregl-ctrl-attrib{ display:none; }
+
+  /* ---------- Markers ---------- */
+  .pin{
+    width:20px; height:20px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .pin .core{
+    width:9px; height:9px; border-radius:50%;
+    background:var(--red); border:1.5px solid var(--parchment);
+    box-shadow:0 0 0 0 rgba(165,55,43,0.55);
+    animation:pulse 2.6s ease-out infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(165,55,43,0.55); }
+    70%{ box-shadow:0 0 0 14px rgba(165,55,43,0); }
+    100%{ box-shadow:0 0 0 0 rgba(165,55,43,0); }
+  }
+  .pin.active .core{ background:var(--parchment); }
+
+  /* ---------- Panel ---------- */
+  .panel{
+    position:absolute; top:0; right:0; bottom:0;
+    width:min(420px,100vw);
+    background:linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
+    border-left:1px solid rgba(179,179,179,0.15);
+    box-shadow:-20px 0 50px rgba(0,0,0,0.35);
+    transform:translateX(100%);
+    transition:transform 0.55s cubic-bezier(0.19,1,0.22,1);
+    z-index:20;
+    display:flex; flex-direction:column;
+    color:var(--parchment);
+  }
+  .panel.open{ transform:translateX(0); }
+
+  .panel-scroll{ flex:1; overflow-y:auto; padding:clamp(28px,4vh,48px) clamp(24px,3vw,40px); }
+  .panel-scroll::-webkit-scrollbar{ width:5px; }
+  .panel-scroll::-webkit-scrollbar-thumb{ background:rgba(179,179,179,0.3); border-radius:3px; }
+
+  .panel-close{
+    position:absolute; top:20px; right:20px; z-index:2;
+    width:34px; height:34px; border-radius:50%;
+    border:1px solid rgba(179,179,179,0.35); background:rgba(15,42,66,0.6);
+    color:var(--parchment); font-size:16px; line-height:1;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .panel-close:hover{ background:rgba(179,179,179,0.15); }
+
+  .eyebrow{ font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--silver); margin-bottom:12px; }
+  .p-name{ font-family:'Crimson Text', serif; font-weight:600; font-size:clamp(28px,4vw,36px); line-height:1.1; margin-bottom:6px; }
+  .p-role{ font-size:14px; color:var(--dust); margin-bottom:18px; }
+  .p-divider{ width:52px; height:1px; background:var(--red); margin-bottom:20px; }
+  .p-prayer{ font-family:'Crimson Text', serif; font-style:italic; font-size:20px; line-height:1.5; margin-bottom:22px; }
+  .p-meta{ display:flex; gap:28px; font-size:12px; color:var(--silver); margin-bottom:34px; flex-wrap:wrap; }
+  .p-meta div span{ display:block; text-transform:uppercase; letter-spacing:0.16em; font-size:0.78em; color:var(--smoke); margin-bottom:4px; }
+
+  .section-label{ font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--silver); margin-bottom:16px; border-top:1px solid rgba(179,179,179,0.15); padding-top:22px; }
+  .letter{ padding:14px 0; border-bottom:1px solid rgba(179,179,179,0.12); }
+  .letter:last-child{ border-bottom:none; }
+  .letter-date{ font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--dust); margin-bottom:5px; }
+  .letter-title{ font-family:'Crimson Text', serif; font-weight:600; font-size:17px; margin-bottom:5px; }
+  .letter-excerpt{ font-size:13px; line-height:1.55; color:var(--silver); }
+
+  .notice{
+    margin-top:26px; padding:14px 16px; border:1px solid rgba(165,55,43,0.4);
+    background:rgba(165,55,43,0.08); font-size:11.5px; line-height:1.6; color:var(--silver);
+    letter-spacing:0.02em;
+  }
+  .notice b{ color:var(--parchment); }
+
+  /* ---------- Idle hint ---------- */
+  .hint{
+    position:absolute; left:50%; bottom:28px; transform:translateX(-50%);
+    font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--silver);
+    display:flex; align-items:center; gap:10px; z-index:5; pointer-events:none;
+    opacity:0.85;
+  }
+  .hint .dot{ width:5px; height:5px; border-radius:50%; background:var(--red); animation:blink 1.8s ease-in-out infinite; }
+  @keyframes blink{ 0%,100%{opacity:0.3;} 50%{opacity:1;} }
+
+  @media (prefers-reduced-motion: reduce){
+    .pin .core{ animation:none; }
+    .hint .dot{ animation:none; }
+  }
+
+  @media (max-width: 640px){
+    .panel{ width:100vw; top:auto; height:78vh; border-left:none; border-top:1px solid rgba(179,179,179,0.15); transform:translateY(100%); }
+    .panel.open{ transform:translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div id="map"></div>
+
+  <div class="header">
+    <div class="brand">
+      <span class="mark">Blessed Hope Baptist Church</span>
+      <span class="sub">World Missions</span>
+    </div>
+    <div class="stat" id="stat"></div>
+  </div>
+
+  <div class="hint" id="hint"><span class="dot"></span> Tap a marker to learn more</div>
+
+  <div class="panel" id="panel">
+    <button class="panel-close" id="panelClose">&times;</button>
+    <div class="panel-scroll" id="panelContent"></div>
+  </div>
+</div>
+
+<script>
+async function init() {
+  // ---- Load content — editable via /admin (Decap CMS) without touching code ----
+  const res = await fetch('./content/missionaries.json', { cache: 'no-store' });
+  const data = await res.json();
+  const missionaries = data.missionaries.map(m => ({ ...m, coords: [m.lng, m.lat] }));
+  const SENDING_ORIGIN = data.sendingOrigin || [-78.1875, 42.9981]; // Batavia, NY
+
+  document.getElementById('stat').innerHTML =
+    `${missionaries.length} Mission Field${missionaries.length === 1 ? '' : 's'}<br><b>Sent from Batavia, NY</b>`;
+
+  // ---- Great-circle arc generator ----
+  function greatCircleArc(start, end, points = 64) {
+    const toRad = d => d * Math.PI / 180;
+    const toDeg = r => r * 180 / Math.PI;
+    const [lon1, lat1] = start.map(toRad);
+    const [lon2, lat2] = end.map(toRad);
+    const d = 2 * Math.asin(Math.sqrt(
+      Math.pow(Math.sin((lat2 - lat1) / 2), 2) +
+      Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin((lon2 - lon1) / 2), 2)
+    ));
+    const coords = [];
+    for (let i = 0; i <= points; i++) {
+      const f = i / points;
+      const A = Math.sin((1 - f) * d) / Math.sin(d);
+      const B = Math.sin(f * d) / Math.sin(d);
+      const x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2);
+      const y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2);
+      const z = A * Math.sin(lat1) + B * Math.sin(lat2);
+      const lat = Math.atan2(z, Math.sqrt(x * x + y * y));
+      const lon = Math.atan2(y, x);
+      coords.push([toDeg(lon), toDeg(lat)]);
+    }
+    return coords;
+  }
+
+  const arcsGeoJSON = {
+    type: 'FeatureCollection',
+    features: missionaries.map(m => ({
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'LineString', coordinates: greatCircleArc(SENDING_ORIGIN, m.coords) }
+    }))
+  };
+
+  // ---- Map init ----
+  const map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://demotiles.maplibre.org/style.json',
+    projection: 'globe',
+    center: [-30, 25],
+    zoom: 1.6,
+    pitch: 0,
+    attributionControl: false,
+    dragRotate: true
+  });
+
+  map.scrollZoom.setWheelZoomRate(1/300);
+
+  map.on('style.load', () => {
+    const style = map.getStyle();
+    style.layers.forEach(layer => {
+      if (layer.type === 'background') map.setPaintProperty(layer.id, 'background-color', '#0F2A42');
+      if (layer.type === 'fill') map.setPaintProperty(layer.id, 'fill-color', '#28527A');
+      if (layer.type === 'line') map.setPaintProperty(layer.id, 'line-color', 'rgba(179,179,179,0.25)');
+      if (layer.type === 'symbol') {
+        if (layer.layout && layer.layout['text-field']) {
+          map.setPaintProperty(layer.id, 'text-color', '#D9D2C4');
+          map.setPaintProperty(layer.id, 'text-halo-color', '#0A1D2E');
+          map.setPaintProperty(layer.id, 'text-halo-width', 1.4);
+          map.setPaintProperty(layer.id, 'text-halo-blur', 0.3);
+          map.setPaintProperty(layer.id, 'text-opacity', 0.75);
+        }
+      }
+    });
+
+    map.addSource('sending-arcs', { type: 'geojson', data: arcsGeoJSON });
+    map.addLayer({
+      id: 'sending-arcs-line',
+      type: 'line',
+      source: 'sending-arcs',
+      paint: {
+        'line-color': '#A5372B',
+        'line-width': 1.3,
+        'line-opacity': 0.55,
+        'line-dasharray': [1, 2]
+      }
+    });
+
+    if (map.setFog) {
+      map.setFog({ range: [0.5, 10], color: '#0F2A42', 'horizon-blend': 0.2, 'high-color': '#1B4265', 'space-color': '#0A1D2E', 'star-intensity': 0.15 });
+    }
+  });
+
+  // ---- Markers ----
+  const panel = document.getElementById('panel');
+  const panelContent = document.getElementById('panelContent');
+  const hint = document.getElementById('hint');
+  let activeEl = null;
+
+  function renderPanel(m) {
+    const displayName = m.sensitive ? 'Field Team — Undisclosed' : m.name;
+    const lettersHtml = (m.letters || []).map(l => `
+      <div class="letter">
+        <div class="letter-date">${l.date}</div>
+        <div class="letter-title">${l.title}</div>
+        <div class="letter-excerpt">${l.excerpt}</div>
+      </div>
+    `).join('');
+
+    panelContent.innerHTML = `
+      <div class="eyebrow">Serving In ${m.field}</div>
+      <div class="p-name">${displayName}</div>
+      <div class="p-role">${m.role}</div>
+      <div class="p-divider"></div>
+      <div class="p-prayer">&ldquo;${m.prayer}&rdquo;</div>
+      <div class="p-meta">
+        <div><span>Sent From BHBC</span>${m.sentSince}</div>
+        <div><span>Field</span>${m.field}</div>
+      </div>
+      ${m.sensitive ? `<div class="notice"><b>Access-restricted field.</b> Identifying details are intentionally limited to protect this team. Thank you for praying with discretion.</div>` : ''}
+      <div class="section-label">Letters &amp; Updates</div>
+      ${lettersHtml}
+    `;
+  }
+
+  missionaries.forEach(m => {
+    const el = document.createElement('div');
+    el.className = 'pin';
+    el.innerHTML = '<div class="core"></div>';
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (activeEl) activeEl.classList.remove('active');
+      el.classList.add('active');
+      activeEl = el;
+      renderPanel(m);
+      panel.classList.add('open');
+      hint.style.display = 'none';
+    });
+    new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(m.coords).addTo(map);
+  });
+
+  document.getElementById('panelClose').addEventListener('click', () => {
+    panel.classList.remove('open');
+    if (activeEl) activeEl.classList.remove('active');
+    activeEl = null;
+  });
+
+  // ---- Ambient idle rotation ----
+  let lastInteraction = Date.now();
+  const IDLE_DELAY = 4000;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  ['mousedown','wheel','touchstart','dragstart'].forEach(evt =>
+    map.getCanvas().addEventListener(evt, () => { lastInteraction = Date.now(); })
+  );
+
+  function rotateFrame() {
+    if (!reduceMotion && !panel.classList.contains('open') && Date.now() - lastInteraction > IDLE_DELAY) {
+      const c = map.getCenter();
+      map.jumpTo({ center: [c.lng + 0.035, c.lat] });
+    }
+    requestAnimationFrame(rotateFrame);
+  }
+  requestAnimationFrame(rotateFrame);
+}
+
+init();
+</script>
+
+</body>
+</html>
