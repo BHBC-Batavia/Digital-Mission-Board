@@ -1,0 +1,84 @@
+backend:
+  name: github
+  repo: BHBC-Batavia/Digital-Mission-Board
+  branch: main
+  base_url: https://comforting-manatee-025366.netlify.app   # OAuth relay only — no content is hosted here
+
+# Keeps published content live immediately; no PR review step for a single editor.
+publish_mode: simple
+
+media_folder: "images/missionaries"
+public_folder: "/images/missionaries"
+
+collections:
+  - name: "missions"
+    label: "Mission Board"
+    files:
+      - file: "content/missionaries.json"
+        label: "Missionaries"
+        name: "missionaries_data"
+        fields:
+          - label: "Sending Origin"
+            name: "sendingOrigin"
+            widget: "list"
+            hint: "Longitude, then Latitude, for Batavia, NY. Leave as-is unless the sending church location changes."
+            default: [-78.1875, 42.9981]
+
+          - label: "Missionaries"
+            name: "missionaries"
+            widget: "list"
+            summary: "{{fields.name}}{{fields.field}}"
+            fields:
+              - label: "Internal ID"
+                name: "id"
+                widget: "string"
+                hint: "Short lowercase code, no spaces — e.g. 'wf'. Used internally only, never shown."
+
+              - label: "Access-Restricted Field?"
+                name: "sensitive"
+                widget: "boolean"
+                default: false
+                hint: "Turn ON for closed or sensitive countries. This hides the name and shows a protection notice instead."
+
+              - label: "Name"
+                name: "name"
+                widget: "string"
+                required: false
+                hint: "Leave blank if Access-Restricted is ON — it won't be shown either way."
+
+              - label: "Role / Ministry"
+                name: "role"
+                widget: "string"
+
+              - label: "Field / Region"
+                name: "field"
+                widget: "string"
+                hint: "Keep this general (e.g. 'Southeast Asia') for access-restricted fields."
+
+              - label: "Longitude"
+                name: "lng"
+                widget: "number"
+                value_type: "float"
+                hint: "Use a general region point for sensitive fields, not an exact address."
+
+              - label: "Latitude"
+                name: "lat"
+                widget: "number"
+                value_type: "float"
+
+              - label: "Prayer Point"
+                name: "prayer"
+                widget: "text"
+
+              - label: "Sent From BHBC Since"
+                name: "sentSince"
+                widget: "string"
+
+              - label: "Letters & Updates"
+                name: "letters"
+                widget: "list"
+                summary: "{{fields.date}} — {{fields.title}}"
+                fields:
+                  - { label: "Date", name: "date", widget: "string", hint: "e.g. August 2026" }
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Update Text", name: "excerpt", widget: "text" }
