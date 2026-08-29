@@ -1,0 +1,49 @@
+{
+  "sendingOrigin": [-78.1875, 42.9981],
+  "missionaries": [
+    {
+      "id": "wf",
+      "sensitive": false,
+      "name": "John & Karen Whitfield",
+      "role": "Bible Translation",
+      "field": "West Africa",
+      "lng": -1.0232,
+      "lat": 7.9465,
+      "prayer": "Pray for endurance as the New Testament translation enters its final review stage.",
+      "sentSince": "2016",
+      "letters": [
+        { "date": "July 2026", "title": "Final Review Underway", "excerpt": "The translation committee met for two weeks to review the Gospel of John. Pray for clarity as we finish the remaining books this year." },
+        { "date": "March 2026", "title": "A Season of Testing", "excerpt": "Health challenges slowed our pace this quarter, but the team pressed on. Thank you for standing with us in prayer." }
+      ]
+    },
+    {
+      "id": "ct",
+      "sensitive": false,
+      "name": "David & Anna Torres",
+      "role": "Orphan Care & Discipleship",
+      "field": "Central America",
+      "lng": -90.2308,
+      "lat": 15.7835,
+      "prayer": "Pray for the children's home expansion and for laborers to join the discipleship team.",
+      "sentSince": "2021",
+      "letters": [
+        { "date": "June 2026", "title": "Ground Broken", "excerpt": "Construction on the second dormitory began this month. We rejoice to see the Lord provide through so many faithful churches." },
+        { "date": "January 2026", "title": "Five New Believers", "excerpt": "Five young men from the discipleship program professed faith this quarter. Pray for their growth and baptism." }
+      ]
+    },
+    {
+      "id": "sa",
+      "sensitive": true,
+      "name": "",
+      "role": "Church Planting — Access-Restricted Field",
+      "field": "Southeast Asia",
+      "lng": 100.9925,
+      "lat": 15.87,
+      "prayer": "Pray for open doors among unreached families and wisdom for a team laboring quietly in a sensitive region.",
+      "sentSince": "2019",
+      "letters": [
+        { "date": "August 2026", "title": "Steady Progress", "excerpt": "A small gathering continues to meet. Details are kept general for the team's protection — please pray for continued favor and safety." }
+      ]
+    }
+  ]
+}
