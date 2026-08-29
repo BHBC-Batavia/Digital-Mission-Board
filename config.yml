@@ -1,8 +1,8 @@
 backend:
   name: github
-  repo: YOUR-GITHUB-USERNAME/YOUR-REPO-NAME   # e.g. elake/bhbc-missions
+  repo: BHBC-Batavia/Digital-Mission-Board
   branch: main
-  base_url: https://YOUR-NETLIFY-AUTH-SITE.netlify.app   # OAuth relay only — see setup notes
+  base_url: https://comforting-manatee-025366.netlify.app   # OAuth relay only — no content is hosted here
 
 # Keeps published content live immediately; no PR review step for a single editor.
 publish_mode: simple
