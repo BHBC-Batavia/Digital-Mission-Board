@@ -6,7 +6,7 @@
   "missionaries": [
     {
       "sentSince": "2026",
-      "lng": 41.18052,
+      "lng": -73.1952,
       "prayer": "Pray for a potential building opportunity in Bridgeport, for hearts in the city to be prepared for the gospel, and for continued financial support as the Frazers press toward full funding.",
       "name": "Anthony & Leah Frazer",
       "letters": [
@@ -20,7 +20,7 @@
       "sensitive": false,
       "field": "Bridgeport, Connecticut",
       "id": "af",
-      "lat": 73.19264
+      "lat": 41.1865
     }
   ]
 }
