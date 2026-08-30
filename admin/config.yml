@@ -3,7 +3,7 @@ backend:
   repo: BHBC-Batavia/Digital-Mission-Board
   branch: main
   base_url: https://digital-mission-board.elijahlake03.workers.dev   # OAuth relay only — Cloudflare Worker, no content is hosted here
-  
+
 # Keeps published content live immediately; no PR review step for a single editor.
 publish_mode: simple
 
@@ -70,7 +70,7 @@ collections:
                 name: "prayer"
                 widget: "text"
 
-              - label: "Sent From BHBC Since"
+              - label: "Supported By BHBC Since"
                 name: "sentSince"
                 widget: "string"
 
