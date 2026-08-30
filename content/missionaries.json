@@ -18,6 +18,8 @@
       ],
       "role": "Church Planting",
       "sensitive": false,
+      "cardBack": "/images/missionaries/back.jpg",
+      "cardFront": "/images/missionaries/front.jpg",
       "field": "Bridgeport, Connecticut, USA",
       "id": "af",
       "lat": 41.1865
