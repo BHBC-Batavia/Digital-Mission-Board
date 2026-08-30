@@ -1,49 +1,67 @@
 {
-  "sendingOrigin": [-78.1875, 42.9981],
+  "sendingOrigin": [
+    -78.1875,
+    42.9981
+  ],
   "missionaries": [
     {
-      "id": "wf",
-      "sensitive": false,
-      "name": "John & Karen Whitfield",
-      "role": "Bible Translation",
-      "field": "West Africa",
-      "lng": -1.0232,
-      "lat": 7.9465,
-      "prayer": "Pray for endurance as the New Testament translation enters its final review stage.",
-      "sentSince": "2016",
+      "sentSince": "2026",
+      "lng": 73.1894,
+      "prayer": "Pray for a potential building opportunity in Bridgeport, for hearts in the city to be prepared for the gospel, and for continued financial support as the Frazers press toward full funding.",
+      "name": "Anthony & Leah Frazer",
       "letters": [
-        { "date": "July 2026", "title": "Final Review Underway", "excerpt": "The translation committee met for two weeks to review the Gospel of John. Pray for clarity as we finish the remaining books this year." },
-        { "date": "March 2026", "title": "A Season of Testing", "excerpt": "Health challenges slowed our pace this quarter, but the team pressed on. Thank you for standing with us in prayer." }
-      ]
+        {
+          "date": "February 2026",
+          "title": "January/February Prayer Letter",
+          "excerpt": "Dear Praying Friends,\nThe first two months of the year have been full — full of travel, full of meetings, full of snow… and full of God’s\nfaithfulness.\nJanuary Highlights\nIt has truly been a joy traveling. One of the unexpected blessings of deputation is not just visiting pastors and churches, but\nreconnecting with dear friends in the ministry. The fellowship along the way has strengthened our hearts more than we can\nsay.\nWe were privileged to visit several wonderful churches throughout New England. Being close to home allowed me to go soul\nwinning with a good friend, and we were able to see two individuals make professions of faith. There is nothing like watching\nGod work in someone’s heart.\nDuring the second week of January, I attended a church planting conference in Oklahoma. The Lord used that meeting to\ndeeply encourage and steady my spirit. It was a timely reminder that the work we are called to is God’s work — and He is\nfaithful to build His church.\nThe third week of January, our family traveled to North Carolina to present the ministry in a couple of churches there. We\nmade it home just before the first major winter storm hit. Praise the Lord, none of our meetings were canceled! We were\nsnowed in Monday and part of Tuesday, but it gave us unexpected family time together.\nFebruary Highlights\nFebruary kept us in New England the entire month, which allowed for a slightly slower pace and some much-needed rhythm\nfor the kids’ sleep schedules.\nWe were especially grateful to be home for Valentine’s Day. Leah and I decided to make pasta from scratch — fettuccine\nAlfredo. Let’s just say… Leah was “in charge” and I was the enthusiastic assistant. (It is clear that church planting may be my\ncalling — cooking is not!) It was sweet time together.\nWe were also able to connect with other families. I joined a few dads for fellowship while our wives enjoyed some kidless\ntime together. It is a blessing to have meaningful fellowship so close to home during this season.\nAnother snowstorm came through, but once again the Lord protected our schedule. No meetings were canceled, and when we\nwere snowed in, we were safely at home.\nLater in the month, I attended a church planting conference in Memphis with a strong emphasis on reaching Black America. It\nwas an incredible opportunity to meet pastors and leaders burdened for inner-city church planting. The connections made\nthere will be invaluable as we prepare for Bridgeport.\nA Special Provision\nWe also had to find a new doctor recently, and the Lord provided immediately. Leah found a practice run by believers that\naccepts our insurance. Adalee and Anthony had their first appointments, and we were so grateful for the care they received.\nLeah and I are even considering making them our primary care as well. God truly cares about the practical details of life.\nPraises\nPastor Stephen Rogers from Harvest Baptist Church in Hagerstown, MD, gifted us a bilingual Bible. We have been\nusing it constantly as Leah and I continue working to learn Spanish. It has been an incredible help.\nOver the past two months, we have picked up four new supporting churches, bringing us to approximately 25% of our\nneeded support. We are so thankful!\nThe Hammonds (who will be joining us in planting City Baptist Church) have made a strong push in growing the\nBible study they’ve started. It is exciting to see early groundwork being laid.\nPrayer Requests\nA potential building opportunity in Bridgeport — pray for clear direction and open doors.\nI am going to be taking Pastor Pete Montoro’s inner-city church planting class in Astoria, Queens. Please pray the\nLord would continue shaping and growing me through this training.\nContinued monthly financial support as we press toward full support.\nThat the Holy Spirit would even now prepare hearts in Bridgeport for the gospel.\nStrength, unity, and wisdom for our family during this season of travel and preparation.\nThank you for standing with us. Your prayers, encouragement, and support mean more than you know. We are reminded\nconstantly that we are not doing this alone — we are sent, and we are supported by faithful churches like yours.\nUntil all hear,\nAnthony & Leah Frazer\nAdalee (2) & Anthony III (6 months)\nChurch Planters to Bridgeport, CT\nCity Baptist Church"
+        }
+      ],
+      "role": "Church Planting",
+      "sensitive": false,
+      "field": "Bridgeport, Connecticut",
+      "id": "af",
+      "lat": 41.1792
     },
     {
-      "id": "ct",
-      "sensitive": false,
-      "name": "David & Anna Torres",
-      "role": "Orphan Care & Discipleship",
-      "field": "Central America",
-      "lng": -90.2308,
-      "lat": 15.7835,
-      "prayer": "Pray for the children's home expansion and for laborers to join the discipleship team.",
       "sentSince": "2021",
+      "lng": -90.2308,
+      "prayer": "Pray for the children's home expansion and for laborers to join the discipleship team.",
+      "name": "David & Anna Torres",
       "letters": [
-        { "date": "June 2026", "title": "Ground Broken", "excerpt": "Construction on the second dormitory began this month. We rejoice to see the Lord provide through so many faithful churches." },
-        { "date": "January 2026", "title": "Five New Believers", "excerpt": "Five young men from the discipleship program professed faith this quarter. Pray for their growth and baptism." }
-      ]
+        {
+          "date": "June 2026",
+          "title": "Ground Broken",
+          "excerpt": "Construction on the second dormitory began this month. We rejoice to see the Lord provide through so many faithful churches."
+        },
+        {
+          "date": "January 2026",
+          "title": "Five New Believers",
+          "excerpt": "Five young men from the discipleship program professed faith this quarter. Pray for their growth and baptism."
+        }
+      ],
+      "role": "Orphan Care & Discipleship",
+      "sensitive": false,
+      "field": "Central America",
+      "id": "ct",
+      "lat": 15.7835
     },
     {
-      "id": "sa",
-      "sensitive": true,
-      "name": "",
-      "role": "Church Planting — Access-Restricted Field",
-      "field": "Southeast Asia",
-      "lng": 100.9925,
-      "lat": 15.87,
-      "prayer": "Pray for open doors among unreached families and wisdom for a team laboring quietly in a sensitive region.",
       "sentSince": "2019",
+      "lng": 100.9925,
+      "prayer": "Pray for open doors among unreached families and wisdom for a team laboring quietly in a sensitive region.",
+      "name": "",
       "letters": [
-        { "date": "August 2026", "title": "Steady Progress", "excerpt": "A small gathering continues to meet. Details are kept general for the team's protection — please pray for continued favor and safety." }
-      ]
+        {
+          "date": "August 2026",
+          "title": "Steady Progress",
+          "excerpt": "A small gathering continues to meet. Details are kept general for the team's protection — please pray for continued favor and safety."
+        }
+      ],
+      "role": "Church Planting — Access-Restricted Field",
+      "sensitive": true,
+      "field": "Southeast Asia",
+      "id": "sa",
+      "lat": 15.87
     }
   ]
 }
