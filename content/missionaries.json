@@ -21,47 +21,6 @@
       "field": "Bridgeport, Connecticut",
       "id": "af",
       "lat": 73.19264
-    },
-    {
-      "sentSince": "2021",
-      "lng": -90.2308,
-      "prayer": "Pray for the children's home expansion and for laborers to join the discipleship team.",
-      "name": "David & Anna Torres",
-      "letters": [
-        {
-          "date": "June 2026",
-          "title": "Ground Broken",
-          "excerpt": "Construction on the second dormitory began this month. We rejoice to see the Lord provide through so many faithful churches."
-        },
-        {
-          "date": "January 2026",
-          "title": "Five New Believers",
-          "excerpt": "Five young men from the discipleship program professed faith this quarter. Pray for their growth and baptism."
-        }
-      ],
-      "role": "Orphan Care & Discipleship",
-      "sensitive": false,
-      "field": "Central America",
-      "id": "ct",
-      "lat": 15.7835
-    },
-    {
-      "sentSince": "2019",
-      "lng": 100.9925,
-      "prayer": "Pray for open doors among unreached families and wisdom for a team laboring quietly in a sensitive region.",
-      "name": "",
-      "letters": [
-        {
-          "date": "August 2026",
-          "title": "Steady Progress",
-          "excerpt": "A small gathering continues to meet. Details are kept general for the team's protection — please pray for continued favor and safety."
-        }
-      ],
-      "role": "Church Planting — Access-Restricted Field",
-      "sensitive": true,
-      "field": "Southeast Asia",
-      "id": "sa",
-      "lat": 15.87
     }
   ]
 }
