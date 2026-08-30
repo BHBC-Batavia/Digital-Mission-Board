@@ -101,6 +101,12 @@
   .eyebrow{ font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--silver); margin-bottom:12px; }
   .p-name{ font-family:'Crimson Text', serif; font-weight:600; font-size:clamp(28px,4vw,36px); line-height:1.1; margin-bottom:6px; }
   .p-role{ font-size:14px; color:var(--dust); margin-bottom:18px; }
+
+  .card-photos{ display:flex; gap:12px; margin-bottom:24px; }
+  .card-photo{ flex:1; min-width:0; border-radius:10px; overflow:hidden; border:1px solid rgba(179,179,179,0.25); background:rgba(0,0,0,0.15); }
+  .card-photo img{ width:100%; height:auto; display:block; }
+  .card-photo-label{ font-size:9.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--silver); padding:6px 9px; background:rgba(15,42,66,0.7); }
+
   .p-divider{ width:52px; height:1px; background:var(--red); margin-bottom:20px; }
   .p-prayer{ font-family:'Crimson Text', serif; font-style:italic; font-size:20px; line-height:1.5; margin-bottom:22px; }
   .p-meta{ display:flex; gap:28px; font-size:12px; color:var(--silver); margin-bottom:34px; flex-wrap:wrap; }
@@ -198,7 +204,7 @@ async function init() {
   const SENDING_ORIGIN = data.sendingOrigin || [-78.1875, 42.9981]; // Batavia, NY
 
   document.getElementById('stat').innerHTML =
-    `${missionaries.length} Mission Field${missionaries.length === 1 ? '' : 's'}<br><b>Sent from Batavia, NY</b>`;
+    `${missionaries.length} Mission Field${missionaries.length === 1 ? '' : 's'}<br><b>Supported from Batavia, NY</b>`;
 
   // ---- Great-circle arc generator ----
   function greatCircleArc(start, end, points = 64) {
@@ -299,14 +305,28 @@ async function init() {
       </div>
     `).join('');
 
+    // Card images are only shown for non-sensitive entries, even if accidentally uploaded.
+    let cardsHtml = '';
+    if (!m.sensitive && (m.cardFront || m.cardBack)) {
+      cardsHtml = `<div class="card-photos">`;
+      if (m.cardFront) {
+        cardsHtml += `<div class="card-photo"><img src="${m.cardFront}" alt="${displayName} — card front" loading="lazy"><div class="card-photo-label">Front</div></div>`;
+      }
+      if (m.cardBack) {
+        cardsHtml += `<div class="card-photo"><img src="${m.cardBack}" alt="${displayName} — card back" loading="lazy"><div class="card-photo-label">Back</div></div>`;
+      }
+      cardsHtml += `</div>`;
+    }
+
     panelContent.innerHTML = `
       <div class="eyebrow">Serving In ${m.field}</div>
       <div class="p-name">${displayName}</div>
       <div class="p-role">${m.role}</div>
+      ${cardsHtml}
       <div class="p-divider"></div>
       <div class="p-prayer">&ldquo;${m.prayer}&rdquo;</div>
       <div class="p-meta">
-        <div><span>Sent From BHBC</span>${m.sentSince}</div>
+        <div><span>Supported By BHBC</span>${m.sentSince}</div>
         <div><span>Field</span>${m.field}</div>
       </div>
       ${m.sensitive ? `<div class="notice"><b>Access-restricted field.</b> Identifying details are intentionally limited to protect this team. Thank you for praying with discretion.</div>` : ''}
