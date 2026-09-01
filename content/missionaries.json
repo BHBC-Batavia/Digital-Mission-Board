@@ -23,6 +23,26 @@
       "field": "Bridgeport, Connecticut, USA",
       "id": "af",
       "lat": 41.1865
+    },
+    {
+      "sentSince": "2026",
+      "lng": -115.2838,
+      "prayer": "Pray for the Lord to continue opening doors during deputation, for wisdom as the Scotts finish raising support, and for the hearts of the unreached in the cities He calls them to.",
+      "name": "Mark & Daci Scott",
+      "letters": [
+        {
+          "date": "June 2026",
+          "title": "June 2026 Update",
+          "excerpt": "Dear supporting church,\n\nWe have been reminded on our deputation trail of the need that there is in the big cities of not just the United States, but also all over the world. God has given us opportunities to go to Houston, Dallas/Fort Worth, Philadelphia, and New York City. These are some of the largest cities in the United States, and many of them have very few churches. Many Christians want to move away from the places to escape the evil that resides in them, but how will they ever have light if we who possess it leave? Seeing these cities has only increased the burden in our heart to reach the city that God has called us to. It is alarming the amount of people who are left unreached in the big cities of the world.\n\nIn May and June, we have been in the Northeast presenting our ministry to churches. With it being my first time in the Northeast, it has been a blessing to meet many new pastors and churches and to see their hearts for their cities. We have been in western New York for most of the time. Daci's sister and brother-in-law live near Buffalo, New York and he is the pastor of a church in the area. We have enjoyed the time spent with family when we are not presenting and spending time with other pastors.\n\nWe praise the Lord that we have been promised 23% of our needed support in just three months. The Lord has been good to us in giving us meetings, providing our needs, and protecting us as we travel many miles. Thank you for your faithful prayers and support.\n\nYour missionaries,\nThe Scotts"
+        }
+      ],
+      "role": "Church Planting",
+      "sensitive": false,
+      "cardBack": "/images/missionaries/scott_back.jpg",
+      "cardFront": "/images/missionaries/scott_front.jpg",
+      "field": "Baja California, Mexico",
+      "id": "scott",
+      "lat": 30.8406
     }
   ]
 }
