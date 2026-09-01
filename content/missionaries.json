@@ -65,6 +65,7 @@
       "lat": 68.3487
     },
     {
+      "sentSince": "2025",
       "lng": -87.8798,
       "prayer": "Pray for the Lord to provide the Rardins' remaining support by year's end, for wisdom as they seek an RV motorhome for full-time travel, for Haddon's upcoming doctor's appointment, and for continued open doors for Bible handouts and soulwinning training across the churches they visit.",
       "name": "Andrew & Abby Rardin",
@@ -77,6 +78,8 @@
       ],
       "role": "Missionary Evangelist — Bible Handout Ministry",
       "sensitive": false,
+      "cardBack": "/images/missionaries/rardin_back.jpg",
+      "cardFront": "/images/missionaries/rardin_front.jpg",
       "field": "Traveling Evangelist, Central U.S. (Home base: Bourbonnais, IL)",
       "id": "rardin",
       "lat": 41.1367
