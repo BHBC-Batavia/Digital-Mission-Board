@@ -43,6 +43,26 @@
       "field": "Baja California, Mexico",
       "id": "scott",
       "lat": 30.8406
+    },
+    {
+      "sentSince": "2026",
+      "lng": -166.7635,
+      "prayer": "Pray for Matthew's health as doctors work to diagnose and manage a rare, worsening skin condition, for safe travel back to Point Hope through Arctic storms, and for continued provision as the family looks at repairs to their home and the church building.",
+      "name": "Matthew & Jennifer Sutton",
+      "letters": [
+        {
+          "date": "February 2026",
+          "title": "February 2026 Update",
+          "excerpt": "February 1st, 2026\n\nHappy New Year! We hope you all had a great Christmas and New Year! It was so nice to spend Christmas as a family together on the mission field! We've been on the mission field of Point Hope now for ten years by God's grace! We cannot thank you enough for all your prayers and support over this decade, we couldn't have done it without you all! Lord willing, if the Lord tarries, we will still be out here another ten years! Of course we are praying that this would be the year that our Lord Jesus comes to take us home!\n\nWe've had some bad weather lately with the wind chills down to negative fifty degrees and blowing snow causing big snow drifts. The church pipes froze up a couple times so we are trying to keep those thawed the best we can. We may need to look into insulating it better in the summer. I'm also praying about having metal siding put onto our house. With the harsh winters I believe this will help protect and prolong our house. The guys that did such a great job on our addition measured everything when they were here, we just need wisdom about having it done this summer or next depending on our finances.\n\nUnfortunately I am currently writing this prayer letter in Seattle once again for medical reasons. My symptoms that I've been dealing with have gotten much worse, as I currently have six more of those ulcerating sores that keep getting bigger and deeper every day. I was supposed to see the dermatologist at the end of February but the sores have gotten to be unbearable, so the doctors told me to come to Seattle as soon as possible. So far they have taken two more biopsies as well as blood work and two CT scans. They still are not one hundred percent sure what it is but they have an idea. They believe it's a very rare condition that they have admitted the medical field needs about fifty more years to fully understand. Thank God I know the Great Physician who knows all about it! Tomorrow I will pick up the medication they have prescribed me that they are hoping will heal up the sores. They say that more sores can appear at any moment and I will most likely have to deal with this for the rest of my life since they haven't found a cure for it yet. I sure would appreciate your prayers that these sores would be manageable, if it be God's will!\n\nI am scheduled to fly back to Point Hope on February 3rd and arrive on the 4th. There is a storm brewing in the arctic once again, so I sure would appreciate your prayers that I can fly in and not get stuck in Kotzebue, which is the village we have to take a bush plane from. I'm so looking forward to getting back with my family again and ministering together for the Lord where He has called us! Thank you again for all you do for us!! God bless!\n\nYour Missionaries to Point Hope, Alaska,\nMatthew, Jennifer, Jacob, Joanna, Sarah, and Julia Sutton"
+        }
+      ],
+      "role": "Church Planting / Village Ministry",
+      "sensitive": false,
+      "cardBack": "/images/missionaries/sutton_back.jpg",
+      "cardFront": "/images/missionaries/sutton_front.jpg",
+      "field": "Point Hope, Alaska",
+      "id": "sutton",
+      "lat": 68.3487
     }
   ]
 }
