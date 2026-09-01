@@ -108,6 +108,26 @@
       "field": "Shelbyville, Tennessee, USA",
       "id": "kosiorek",
       "lat": 35.4834
+    },
+    {
+      "sentSince": "2025",
+      "lng": -73.4462,
+      "prayer": "Pray for continued fruit as Forever Believers in Christ Baptist Church reaches Long Island's roughly 3 million residents, for the many who heard the Gospel through their recent week-long crusade, and for strength as they disciple new believers.",
+      "name": "Jeffrey & Shirley Ulyse",
+      "letters": [
+        {
+          "date": "February 2026",
+          "title": "February 2026 Update",
+          "excerpt": "Hello Pastor Calabrese and Blessed Hope BC,\n\nWe greet you with joy, as our brothers and sisters in Jesus Christ. We thank the Lord for your faithful prayers and support of our ministry and family. God has been so good to us! Your partnership in the Gospel is a great encouragement to us and we are grateful for your continued stand for the work of the Lord.\n\nWe praise the Lord for what \"He\" has done and is doing through our local, New Testament church. The Lord has blessed us with the task of preaching, teaching and making disciples through the Gospel here in Long Island, New York which holds roughly 3 million residents. During this past year, we saw roughly 40 people saved and commit their lives to a life redeemed by their personal savior Jesus Christ; but there is still much work to be done.\n\nWe held a week long \"Gospel crusade\", which we were able to provide a \"John & Romans\" bible, along with other biblical literature to over 20,000 residents. This was achieved during our 1-year anniversary week as a new church plant, on July 7th through July 11th; but there is still work to be done. We are pleased to report to you that we are \"Full steam ahead\" in performing this work, here on the island.\n\nThe Lord has given us opportunities to serve \"Him\" by spreading the Gospel, discipling believers and strengthening the work given to this ministry by our Lord. We are thankful for \"His\" faithfulness and for the fruit we are seeing, as we labor in love, for \"His\" glory.\n\nWe thank the Lord for you Pastor Calabrese and our church family at Blessed Hope BC. We are in prayer for you and with you always. Hope to see you all soon. God bless you!\n\nBlessings,\nPastor U\n\n\"Preserve me, O God; for in thee do I put my trust\".\nPsalm 16:1 KJV"
+        }
+      ],
+      "role": "Church Planting / Pastor",
+      "sensitive": false,
+      "cardBack": "/images/missionaries/ulyse_back.jpg",
+      "cardFront": "/images/missionaries/ulyse_front.jpg",
+      "field": "Farmingdale, NY, USA (Long Island)",
+      "id": "ulyse",
+      "lat": 40.7326
     }
   ]
 }
