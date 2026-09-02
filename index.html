@@ -6,9 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.12.0/maplibre-gl.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.12.0/maplibre-gl.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root{
     --navy:#1B4265;
@@ -42,11 +44,22 @@
     font-size:clamp(9px,0.8vw,11px); letter-spacing:0.28em; text-transform:uppercase;
     color:var(--silver); margin-top:3px;
   }
-  .stat{
-    font-size:clamp(10px,0.9vw,12.5px); letter-spacing:0.12em; text-transform:uppercase;
-    color:var(--silver); text-align:right; line-height:1.6;
+  .stat-ribbon{ display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:baseline; gap:14px; text-align:right; max-width:260px; }
+  .stat-item{ display:flex; flex-direction:column; align-items:flex-end; }
+  .stat-num{
+    font-family:'Crimson Text', serif; font-weight:600;
+    font-size:clamp(20px,2.4vw,30px); color:var(--parchment); line-height:1;
   }
-  .stat b{ color:var(--parchment); font-weight:500; }
+  .stat-label{
+    font-size:clamp(8px,0.7vw,10px); letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--silver); margin-top:3px;
+  }
+  .stat-divider{ width:1px; height:26px; background:rgba(179,179,179,0.25); }
+  .stat-sub{
+    width:100%; flex-basis:100%;
+    font-size:clamp(9px,0.8vw,11px); letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--silver); margin-top:6px; text-align:right;
+  }
 
   /* ---------- Map ---------- */
   #map{ position:absolute; inset:0; }
@@ -117,6 +130,17 @@
   }
   .panel-close:hover{ background:rgba(179,179,179,0.15); }
 
+  .panel-nav{
+    position:absolute; top:20px; z-index:2;
+    width:34px; height:34px; border-radius:50%;
+    border:1px solid rgba(179,179,179,0.35); background:rgba(15,42,66,0.6);
+    color:var(--parchment); font-size:18px; line-height:1;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .panel-nav:hover{ background:rgba(179,179,179,0.15); }
+  .panel-nav.prev{ left:14px; }
+  .panel-nav.next{ left:56px; }
+
   .eyebrow{ font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--silver); margin-bottom:12px; }
   .p-name{ font-family:'Crimson Text', serif; font-weight:600; font-size:clamp(28px,4vw,36px); line-height:1.1; margin-bottom:6px; }
   .p-role{ font-size:14px; color:var(--dust); margin-bottom:18px; }
@@ -185,6 +209,43 @@
     .panel.open{ transform:translateY(0); }
   }
 
+  /* ---------- Verse banner (bottom) ---------- */
+  .verse-banner{
+    position:absolute; left:50%; bottom:22px; transform:translateX(-50%);
+    z-index:5; pointer-events:none; text-align:center; max-width:min(78vw,560px);
+  }
+  .verse-text{
+    font-family:'Crimson Text', serif; font-style:italic;
+    font-size:clamp(13px,1.3vw,16px); line-height:1.5;
+    color:var(--silver); opacity:0; transition:opacity 1.1s ease;
+  }
+  .verse-text.show{ opacity:0.85; }
+  .verse-text .verse-ref{
+    display:block; margin-top:5px; font-family:'Poppins', sans-serif; font-style:normal;
+    font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--smoke);
+  }
+
+  /* ---------- QR corner ---------- */
+  .qr-corner{
+    position:absolute; left:20px; bottom:20px; z-index:5;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    opacity:0.92;
+  }
+  .qr-box{
+    width:76px; height:76px; padding:6px; border-radius:8px;
+    background:var(--parchment); box-shadow:0 6px 20px rgba(0,0,0,0.35);
+  }
+  .qr-box img, .qr-box canvas{ width:100% !important; height:100% !important; }
+  .qr-label{
+    font-size:8.5px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--silver); text-align:center; max-width:90px; line-height:1.4;
+  }
+
+  @media (max-width:640px){
+    .qr-corner{ display:none; } /* redundant on the device you're already viewing it on */
+    .verse-banner{ bottom:16px; max-width:88vw; }
+  }
+
   /* ---------- Cinematic intro ---------- */
   .intro{
     position:absolute; inset:0; z-index:50;
@@ -232,12 +293,28 @@
       <span class="mark">Blessed Hope Baptist Church</span>
       <span class="sub">World Missions</span>
     </div>
-    <div class="stat" id="stat"></div>
+    <div class="stat-ribbon" id="statRibbon">
+      <div class="stat-item"><span class="stat-num" id="statFields">0</span><span class="stat-label">Mission Fields</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat-item"><span class="stat-num" id="statYears">0</span><span class="stat-label">Years Supported</span></div>
+      <div class="stat-sub">Supported from Batavia, NY</div>
+    </div>
   </div>
 
   <div class="panel" id="panel">
     <button class="panel-close" id="panelClose">&times;</button>
+    <button class="panel-nav prev" id="panelPrev" aria-label="Previous missionary">&#8249;</button>
+    <button class="panel-nav next" id="panelNext" aria-label="Next missionary">&#8250;</button>
     <div class="panel-scroll" id="panelContent"></div>
+  </div>
+
+  <div class="verse-banner" id="verseBanner">
+    <div class="verse-text" id="verseText"></div>
+  </div>
+
+  <div class="qr-corner" id="qrCorner">
+    <div class="qr-box" id="qrBox"></div>
+    <div class="qr-label">Visit on your phone</div>
   </div>
 
   <div class="intro" id="intro">
@@ -275,6 +352,8 @@ const FALLBACK_DATA = {
 };
 
 async function init() {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   // ---- Load content — editable via /admin (Decap CMS) without touching code ----
   let data;
   try {
@@ -288,8 +367,38 @@ async function init() {
   const missionaries = data.missionaries.map(m => ({ ...m, coords: [m.lng, m.lat] }));
   const SENDING_ORIGIN = data.sendingOrigin || [-78.1875, 42.9981]; // Batavia, NY
 
-  document.getElementById('stat').innerHTML =
-    `${missionaries.length} Mission Field${missionaries.length === 1 ? '' : 's'}<br><b>Supported from Batavia, NY</b>`;
+  document.getElementsByClassName('stat-item')[0].querySelector('.stat-label').textContent =
+    `Mission Field${missionaries.length === 1 ? '' : 's'}`;
+
+  const currentYear = new Date().getFullYear();
+  const totalYearsSupported = missionaries.reduce((sum, m) => {
+    const since = parseInt(m.sentSince, 10);
+    return sum + (isNaN(since) ? 0 : Math.max(0, currentYear - since));
+  }, 0);
+
+  function animateCount(el, target, duration) {
+    if (reduceMotion) { el.textContent = target; return; }
+    const start = performance.now();
+    function step(now) {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
+      el.textContent = Math.round(eased * target);
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  animateCount(document.getElementById('statFields'), missionaries.length, 1200);
+  animateCount(document.getElementById('statYears'), totalYearsSupported, 1400);
+
+  if (window.QRCode) {
+    new QRCode(document.getElementById('qrBox'), {
+      text: window.location.origin + window.location.pathname,
+      width: 64,
+      height: 64,
+      colorDark: '#0F2A42',
+      colorLight: '#F3EEE4'
+    });
+  }
 
   // ---- Great-circle arc generator ----
   function greatCircleArc(start, end, points = 64) {
@@ -325,7 +434,20 @@ async function init() {
     }))
   };
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Idle/rotation state — hoisted here so panel navigation (below) can reset it too
+  let lastInteraction = Date.now();
+  let idleHandled = false;
+  let rotationActive = false;
+  const IDLE_DELAY = 30000;
+  const ROTATE_DEG_PER_SEC = 8;
+  const DEFAULT_CENTER = [-30, 25];
+  const DEFAULT_ZOOM = 1.6;
+  const SNAP_DURATION = 1800;
+  function markInteraction() {
+    lastInteraction = Date.now();
+    idleHandled = false;
+    rotationActive = false;
+  }
 
   // ---- Map init ----
   const map = new maplibregl.Map({
@@ -522,22 +644,41 @@ async function init() {
   });
 
   const markerRecords = [];
+  let currentIndex = -1;
 
-  missionaries.forEach(m => {
+  function selectMissionary(index, opts) {
+    opts = opts || {};
+    const fly = opts.fly !== false;
+    currentIndex = ((index % missionaries.length) + missionaries.length) % missionaries.length;
+    const m = missionaries[currentIndex];
+
+    if (activeEl) activeEl.classList.remove('active');
+    activeEl = markerRecords[currentIndex].el;
+    activeEl.classList.add('active');
+
+    renderPanel(m);
+    panel.classList.add('open');
+
+    if (fly) {
+      markInteraction();
+      map.flyTo({ center: m.coords, zoom: Math.max(map.getZoom(), 2.4), duration: 1600, essential: true });
+    }
+  }
+
+  missionaries.forEach((m, i) => {
     const el = document.createElement('div');
     el.className = 'pin';
     el.innerHTML = '<div class="core"></div>';
     el.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (activeEl) activeEl.classList.remove('active');
-      el.classList.add('active');
-      activeEl = el;
-      renderPanel(m);
-      panel.classList.add('open');
+      selectMissionary(i, { fly: false });
     });
     new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(m.coords).addTo(map);
     markerRecords.push({ el, lng: m.coords[0], lat: m.coords[1] });
   });
+
+  document.getElementById('panelPrev').addEventListener('click', () => selectMissionary(currentIndex - 1));
+  document.getElementById('panelNext').addEventListener('click', () => selectMissionary(currentIndex + 1));
 
   // ---- Hide markers that have rotated onto the far side of the globe ----
   // HTML markers aren't clipped by the sphere automatically, so without this
@@ -563,22 +704,8 @@ async function init() {
   });
 
   // ---- Ambient idle rotation ----
-  let lastInteraction = Date.now();
-  const IDLE_DELAY = 30000;       // wait 30s of no input before resuming
-  const ROTATE_DEG_PER_SEC = 8;   // faster spin than before
-  const DEFAULT_CENTER = [-30, 25];
-  const DEFAULT_ZOOM = 1.6;
-  const SNAP_DURATION = 1800;
-
-  let idleHandled = false;   // have we already triggered the snap-back for this idle period?
-  let rotationActive = false; // is continuous rotation currently allowed to run?
-
   ['mousedown','wheel','touchstart','dragstart'].forEach(evt =>
-    map.getCanvas().addEventListener(evt, () => {
-      lastInteraction = Date.now();
-      idleHandled = false;
-      rotationActive = false;
-    })
+    map.getCanvas().addEventListener(evt, markInteraction)
   );
 
   if (!reduceMotion) {
@@ -606,879 +733,36 @@ async function init() {
   }
 
   // ---- Cinematic opening sequence ----
-  function playIntro() {
-    const introEl = document.getElementById('intro');
-    if (reduceMotion) {
-      introEl.style.display = 'none';
-      return;
-    }
-    const markEl = document.getElementById('introMark');
-    const verseEl = document.getElementById('introVerse');
-
-    requestAnimationFrame(() => markEl.classList.add('show'));
-    setTimeout(() => markEl.classList.remove('show'), 2100);
-    setTimeout(() => verseEl.classList.add('show'), 2600);
-    setTimeout(() => verseEl.classList.remove('show'), 5400);
-    setTimeout(() => {
-      introEl.classList.add('hide');
-      lastInteraction = Date.now();
-      map.flyTo({ center: [-30, 25], zoom: 1.6, duration: 4200, curve: 1.4, essential: true });
-    }, 5800);
-    setTimeout(() => {
-      introEl.style.display = 'none';
-      lastInteraction = Date.now();
-    }, 5800 + 4200 + 300);
+  const VERSES = [
+    { text: "Go ye therefore, and teach all nations.", ref: "Matthew 28:19" },
+    { text: "How shall they hear without a preacher?", ref: "Romans 10:14" },
+    { text: "The harvest truly is plenteous, but the labourers are few.", ref: "Matthew 9:37" },
+    { text: "Here am I; send me.", ref: "Isaiah 6:8" }
+  ];
+  let verseIndex = 0;
+  const verseTextEl = document.getElementById('verseText');
+  function showVerse(i) {
+    const v = VERSES[i];
+    verseTextEl.innerHTML = `&ldquo;${v.text}&rdquo;<span class="verse-ref">${v.ref}</span>`;
+    requestAnimationFrame(() => verseTextEl.classList.add('show'));
   }
-
-  map.on('load', playIntro);
-}
-
-init();
-</script>
-
-</body>
-</html>    width:9px; height:9px; border-radius:50%;
-    background:var(--red); border:1.5px solid var(--parchment);
-    box-shadow:0 0 0 0 rgba(165,55,43,0.55);
-    animation:pulse 2.6s ease-out infinite;
-  }
-  @keyframes pulse{
-    0%{ box-shadow:0 0 0 0 rgba(165,55,43,0.55); }
-    70%{ box-shadow:0 0 0 14px rgba(165,55,43,0); }
-    100%{ box-shadow:0 0 0 0 rgba(165,55,43,0); }
-  }
-  .pin.active .core{ background:var(--parchment); }
-
-  /* ---------- Panel ---------- */
-  .panel{
-    position:absolute; top:0; right:0; bottom:0;
-    width:min(420px,100vw);
-    background:linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
-    border-left:1px solid rgba(179,179,179,0.15);
-    box-shadow:-20px 0 50px rgba(0,0,0,0.35);
-    transform:translateX(100%);
-    transition:transform 0.55s cubic-bezier(0.19,1,0.22,1);
-    z-index:20;
-    display:flex; flex-direction:column;
-    color:var(--parchment);
-  }
-  .panel.open{ transform:translateX(0); }
-
-  .panel-scroll{ flex:1; overflow-y:auto; padding:clamp(28px,4vh,48px) clamp(24px,3vw,40px); }
-  .panel-scroll::-webkit-scrollbar{ width:5px; }
-  .panel-scroll::-webkit-scrollbar-thumb{ background:rgba(179,179,179,0.3); border-radius:3px; }
-
-  .panel-close{
-    position:absolute; top:20px; right:20px; z-index:2;
-    width:34px; height:34px; border-radius:50%;
-    border:1px solid rgba(179,179,179,0.35); background:rgba(15,42,66,0.6);
-    color:var(--parchment); font-size:16px; line-height:1;
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-  }
-  .panel-close:hover{ background:rgba(179,179,179,0.15); }
-
-  .eyebrow{ font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--silver); margin-bottom:12px; }
-  .p-name{ font-family:'Crimson Text', serif; font-weight:600; font-size:clamp(28px,4vw,36px); line-height:1.1; margin-bottom:6px; }
-  .p-role{ font-size:14px; color:var(--dust); margin-bottom:18px; }
-
-  .card-photos{ display:flex; gap:12px; margin-bottom:24px; }
-  .card-photo{ flex:1; min-width:0; border-radius:10px; overflow:hidden; border:1px solid rgba(179,179,179,0.25); background:rgba(0,0,0,0.15); }
-  .card-photo img{ width:100%; height:auto; display:block; }
-  .card-photo-label{ font-size:9.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--silver); padding:6px 9px; background:rgba(15,42,66,0.7); }
-
-  .p-divider{ width:52px; height:1px; background:var(--red); margin-bottom:20px; }
-  .p-prayer{ font-family:'Crimson Text', serif; font-style:italic; font-size:20px; line-height:1.5; margin-bottom:22px; }
-  .p-meta{ display:flex; gap:28px; font-size:12px; color:var(--silver); margin-bottom:34px; flex-wrap:wrap; }
-  .p-meta div span{ display:block; text-transform:uppercase; letter-spacing:0.16em; font-size:0.78em; color:var(--smoke); margin-bottom:4px; }
-
-  .section-label{ font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--silver); margin-bottom:16px; border-top:1px solid rgba(179,179,179,0.15); padding-top:22px; }
-  .letter{ padding:14px 0; border-bottom:1px solid rgba(179,179,179,0.12); }
-  .letter:last-child{ border-bottom:none; }
-  .letter-date{ font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--dust); margin-bottom:5px; }
-  .letter-title{ font-family:'Crimson Text', serif; font-weight:600; font-size:17px; margin-bottom:5px; }
-  .letter-excerpt{ font-size:13px; line-height:1.55; color:var(--silver); }
-
-  .notice{
-    margin-top:26px; padding:14px 16px; border:1px solid rgba(165,55,43,0.4);
-    background:rgba(165,55,43,0.08); font-size:11.5px; line-height:1.6; color:var(--silver);
-    letter-spacing:0.02em;
-  }
-  .notice b{ color:var(--parchment); }
-
-  @media (prefers-reduced-motion: reduce){
-    .pin .core{ animation:none; }
-  }
-
-  @media (max-width: 640px){
-    .panel{ width:100vw; top:auto; height:78vh; border-left:none; border-top:1px solid rgba(179,179,179,0.15); transform:translateY(100%); }
-    .panel.open{ transform:translateY(0); }
-  }
-
-  /* ---------- Cinematic intro ---------- */
-  .intro{
-    position:absolute; inset:0; z-index:50;
-    display:grid; place-items:center;
-    background:#0A1D2E;
-    padding:40px; text-align:center;
-    transition:opacity 1.4s ease;
-  }
-  .intro.hide{ opacity:0; pointer-events:none; }
-  .intro-mark, .intro-verse{
-    grid-area:1 / 1;
-    opacity:0; transform:translateY(14px);
-    transition:opacity 1.3s ease, transform 1.3s ease;
-    max-width:68ch;
-  }
-  .intro-mark.show, .intro-verse.show{ opacity:1; transform:translateY(0); }
-  .intro-mark{
-    font-family:'Crimson Text', serif; font-weight:600;
-    font-size:clamp(24px,3.6vw,44px); color:var(--parchment); letter-spacing:0.02em;
-  }
-  .intro-verse{
-    font-family:'Crimson Text', serif; font-style:italic;
-    font-size:clamp(19px,2.6vw,32px); line-height:1.55; color:var(--parchment);
-  }
-  .intro-ref{
-    display:block; margin-top:16px; font-family:'Poppins',sans-serif; font-style:normal;
-    font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--silver);
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .intro{ display:none; }
-  }
-</style>
-</head>
-<body>
-
-<div class="app">
-  <div id="map"></div>
-  <div class="atmosphere-glow"></div>
-  <div class="atmosphere-vignette"></div>
-  <div class="grain-overlay"></div>
-
-  <div class="header">
-    <div class="brand">
-      <span class="mark">Blessed Hope Baptist Church</span>
-      <span class="sub">World Missions</span>
-    </div>
-    <div class="stat" id="stat"></div>
-  </div>
-
-  <div class="panel" id="panel">
-    <button class="panel-close" id="panelClose">&times;</button>
-    <div class="panel-scroll" id="panelContent"></div>
-  </div>
-
-  <div class="intro" id="intro">
-    <div class="intro-mark" id="introMark">Blessed Hope Baptist Church</div>
-    <div class="intro-verse" id="introVerse">&ldquo;Go ye therefore, and teach all nations&hellip;&rdquo;<span class="intro-ref">Matthew 28:19</span></div>
-  </div>
-</div>
-
-<script>
-// Fallback used only if content/missionaries.json can't be fetched — e.g. when this
-// file is opened directly from disk (file://) rather than served by a real web server,
-// which blocks local file fetches for security reasons. On GitHub Pages this never triggers.
-const FALLBACK_DATA = {
-  sendingOrigin: [-78.1875, 42.9981],
-  missionaries: [
-    { id: "wf", sensitive: false, name: "John & Karen Whitfield", role: "Bible Translation", field: "West Africa", lng: -1.0232, lat: 7.9465, prayer: "Pray for endurance as the New Testament translation enters its final review stage.", sentSince: "2016", letters: [
-      { date: "July 2026", title: "Final Review Underway", excerpt: "The translation committee met for two weeks to review the Gospel of John. Pray for clarity as we finish the remaining books this year." },
-      { date: "March 2026", title: "A Season of Testing", excerpt: "Health challenges slowed our pace this quarter, but the team pressed on. Thank you for standing with us in prayer." }
-    ]},
-    { id: "ct", sensitive: false, name: "David & Anna Torres", role: "Orphan Care & Discipleship", field: "Central America", lng: -90.2308, lat: 15.7835, prayer: "Pray for the children's home expansion and for laborers to join the discipleship team.", sentSince: "2021", letters: [
-      { date: "June 2026", title: "Ground Broken", excerpt: "Construction on the second dormitory began this month. We rejoice to see the Lord provide through so many faithful churches." },
-      { date: "January 2026", title: "Five New Believers", excerpt: "Five young men from the discipleship program professed faith this quarter. Pray for their growth and baptism." }
-    ]},
-    { id: "sa", sensitive: true, name: "", role: "Church Planting — Access-Restricted Field", field: "Southeast Asia", lng: 100.9925, lat: 15.87, prayer: "Pray for open doors among unreached families and wisdom for a team laboring quietly in a sensitive region.", sentSince: "2019", letters: [
-      { date: "August 2026", title: "Steady Progress", excerpt: "A small gathering continues to meet. Details are kept general for the team's protection — please pray for continued favor and safety." }
-    ]}
-  ]
-};
-
-async function init() {
-  // ---- Load content — editable via /admin (Decap CMS) without touching code ----
-  let data;
-  try {
-    const res = await fetch('./content/missionaries.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error('fetch not ok');
-    data = await res.json();
-  } catch (err) {
-    console.warn('Could not fetch content/missionaries.json (expected if opened via file://). Using built-in fallback data.', err);
-    data = FALLBACK_DATA;
-  }
-  const missionaries = data.missionaries.map(m => ({ ...m, coords: [m.lng, m.lat] }));
-  const SENDING_ORIGIN = data.sendingOrigin || [-78.1875, 42.9981]; // Batavia, NY
-
-  document.getElementById('stat').innerHTML =
-    `${missionaries.length} Mission Field${missionaries.length === 1 ? '' : 's'}<br><b>Supported from Batavia, NY</b>`;
-
-  // ---- Great-circle arc generator ----
-  function greatCircleArc(start, end, points = 64) {
-    const toRad = d => d * Math.PI / 180;
-    const toDeg = r => r * 180 / Math.PI;
-    const [lon1, lat1] = start.map(toRad);
-    const [lon2, lat2] = end.map(toRad);
-    const d = 2 * Math.asin(Math.sqrt(
-      Math.pow(Math.sin((lat2 - lat1) / 2), 2) +
-      Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin((lon2 - lon1) / 2), 2)
-    ));
-    const coords = [];
-    for (let i = 0; i <= points; i++) {
-      const f = i / points;
-      const A = Math.sin((1 - f) * d) / Math.sin(d);
-      const B = Math.sin(f * d) / Math.sin(d);
-      const x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2);
-      const y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2);
-      const z = A * Math.sin(lat1) + B * Math.sin(lat2);
-      const lat = Math.atan2(z, Math.sqrt(x * x + y * y));
-      const lon = Math.atan2(y, x);
-      coords.push([toDeg(lon), toDeg(lat)]);
-    }
-    return coords;
-  }
-
-  const arcsGeoJSON = {
-    type: 'FeatureCollection',
-    features: missionaries.map(m => ({
-      type: 'Feature',
-      properties: {},
-      geometry: { type: 'LineString', coordinates: greatCircleArc(SENDING_ORIGIN, m.coords) }
-    }))
-  };
-
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // ---- Map init ----
-  const map = new maplibregl.Map({
-    container: 'map',
-    style: 'https://demotiles.maplibre.org/style.json',
-    projection: 'globe',
-    center: [-30, 25],
-    zoom: reduceMotion ? 1.6 : 0.15,
-    pitch: 0,
-    attributionControl: false,
-    dragRotate: true,
-    renderWorldCopies: false
-  });
-
-  map.scrollZoom.setWheelZoomRate(1/300);
-
-  map.on('style.load', () => {
-    const style = map.getStyle();
-    style.layers.forEach(layer => {
-      if (layer.type === 'background') map.setPaintProperty(layer.id, 'background-color', '#0F2A42');
-      if (layer.type === 'fill') map.setPaintProperty(layer.id, 'fill-color', '#28527A');
-      if (layer.type === 'line') map.setPaintProperty(layer.id, 'line-color', 'rgba(179,179,179,0.25)');
-      if (layer.type === 'symbol') {
-        if (layer.layout && layer.layout['text-field']) {
-          map.setPaintProperty(layer.id, 'text-color', '#D9D2C4');
-          map.setPaintProperty(layer.id, 'text-halo-color', '#0A1D2E');
-          map.setPaintProperty(layer.id, 'text-halo-width', 1.4);
-          map.setPaintProperty(layer.id, 'text-halo-blur', 0.3);
-          map.setPaintProperty(layer.id, 'text-opacity', 0.75);
-        }
-      }
-    });
-
-    map.addSource('sending-arcs', { type: 'geojson', data: arcsGeoJSON });
-    map.addLayer({
-      id: 'sending-arcs-line',
-      type: 'line',
-      source: 'sending-arcs',
-      paint: {
-        'line-color': '#A5372B',
-        'line-width': 1.3,
-        'line-opacity': 0.55,
-        'line-dasharray': [1, 2]
-      }
-    });
-
-    // ---- Living pulses traveling along each sending line ----
-    // Each missionary gets a small comet-like light that continuously travels
-    // the arc from Batavia to their field, staggered so they don't move in sync.
-    const arcPaths = missionaries.map(m => greatCircleArc(SENDING_ORIGIN, m.coords));
-    const TRAIL_LENGTH = 6;
-    const CYCLE_MS = 5200;
-    const phaseOffsets = missionaries.map((_, i) => (i / missionaries.length) * CYCLE_MS);
-    const startTime = performance.now();
-
-    map.addSource('pulse-trails', {
-      type: 'geojson',
-      data: { type: 'FeatureCollection', features: [] }
-    });
-    map.addLayer({
-      id: 'pulse-trails-layer',
-      type: 'circle',
-      source: 'pulse-trails',
-      paint: {
-        'circle-radius': ['interpolate', ['linear'], ['get', 'age'], 0, 5, 1, 1.5],
-        'circle-color': '#F3EEE4',
-        'circle-blur': 0.7,
-        'circle-opacity': ['interpolate', ['linear'], ['get', 'age'], 0, 0.9, 1, 0]
-      }
-    });
-
-    function animatePulses(now) {
-      const features = [];
-      arcPaths.forEach((path, mi) => {
-        const t = (((now - startTime) + phaseOffsets[mi]) % CYCLE_MS) / CYCLE_MS;
-        const headIndex = t * (path.length - 1);
-        for (let k = 0; k < TRAIL_LENGTH; k++) {
-          const idx = Math.round(headIndex) - k;
-          if (idx < 0 || idx >= path.length) continue;
-          features.push({
-            type: 'Feature',
-            properties: { age: k / TRAIL_LENGTH },
-            geometry: { type: 'Point', coordinates: path[idx] }
-          });
-        }
-      });
-      const src = map.getSource('pulse-trails');
-      if (src) src.setData({ type: 'FeatureCollection', features });
-      if (!reduceMotion) requestAnimationFrame(animatePulses);
-    }
-
-    if (!reduceMotion) requestAnimationFrame(animatePulses);
-
-    if (map.setFog) {
-      map.setFog({ range: [0.5, 10], color: '#0F2A42', 'horizon-blend': 0.1, 'high-color': '#1B4265', 'space-color': '#0A1D2E', 'star-intensity': 0 });
-    }
-  });
-
-  // ---- Markers ----
-  const panel = document.getElementById('panel');
-  const panelContent = document.getElementById('panelContent');
-  let activeEl = null;
-
-  function renderPanel(m) {
-    const displayName = m.sensitive ? 'Field Team — Undisclosed' : m.name;
-    const lettersHtml = (m.letters || []).map(l => `
-      <div class="letter">
-        <div class="letter-date">${l.date}</div>
-        <div class="letter-title">${l.title}</div>
-        <div class="letter-excerpt">${l.excerpt}</div>
-      </div>
-    `).join('');
-
-    // Card images are only shown for non-sensitive entries, even if accidentally uploaded.
-    let cardsHtml = '';
-    if (!m.sensitive && (m.cardFront || m.cardBack)) {
-      cardsHtml = `<div class="card-photos">`;
-      if (m.cardFront) {
-        cardsHtml += `<div class="card-photo"><img src="${m.cardFront}" alt="${displayName} — card front" loading="lazy"><div class="card-photo-label">Front</div></div>`;
-      }
-      if (m.cardBack) {
-        cardsHtml += `<div class="card-photo"><img src="${m.cardBack}" alt="${displayName} — card back" loading="lazy"><div class="card-photo-label">Back</div></div>`;
-      }
-      cardsHtml += `</div>`;
-    }
-
-    panelContent.innerHTML = `
-      <div class="eyebrow">Serving In ${m.field}</div>
-      <div class="p-name">${displayName}</div>
-      <div class="p-role">${m.role}</div>
-      ${cardsHtml}
-      <div class="p-divider"></div>
-      <div class="p-prayer">&ldquo;${m.prayer}&rdquo;</div>
-      <div class="p-meta">
-        <div><span>Supported By BHBC</span>${m.sentSince}</div>
-        <div><span>Field</span>${m.field}</div>
-      </div>
-      ${m.sensitive ? `<div class="notice"><b>Access-restricted field.</b> Identifying details are intentionally limited to protect this team. Thank you for praying with discretion.</div>` : ''}
-      <div class="section-label">Letters &amp; Updates</div>
-      ${lettersHtml}
-    `;
-  }
-
-  missionaries.forEach(m => {
-    const el = document.createElement('div');
-    el.className = 'pin';
-    el.innerHTML = '<div class="core"></div>';
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (activeEl) activeEl.classList.remove('active');
-      el.classList.add('active');
-      activeEl = el;
-      renderPanel(m);
-      panel.classList.add('open');
-    });
-    new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(m.coords).addTo(map);
-  });
-
-  document.getElementById('panelClose').addEventListener('click', () => {
-    panel.classList.remove('open');
-    if (activeEl) activeEl.classList.remove('active');
-    activeEl = null;
-  });
-
-  // ---- Ambient idle rotation ----
-  let lastInteraction = Date.now();
-  const IDLE_DELAY = 4000;
-  const ROTATE_DEG_PER_SEC = 3.2;
-
-  ['mousedown','wheel','touchstart','dragstart'].forEach(evt =>
-    map.getCanvas().addEventListener(evt, () => { lastInteraction = Date.now(); })
-  );
-
-  if (!reduceMotion) {
-    let lastFrameTime = null;
-    function rotateFrame(now) {
-      if (lastFrameTime === null) lastFrameTime = now;
-      const dt = (now - lastFrameTime) / 1000;
-      lastFrameTime = now;
-      if (!panel.classList.contains('open') && Date.now() - lastInteraction > IDLE_DELAY) {
-        const c = map.getCenter();
-        map.jumpTo({ center: [c.lng + ROTATE_DEG_PER_SEC * dt, c.lat] });
-      }
-      requestAnimationFrame(rotateFrame);
-    }
-    requestAnimationFrame(rotateFrame);
-  }
-
-  // ---- Cinematic opening sequence ----
-  function playIntro() {
-    const introEl = document.getElementById('intro');
-    if (reduceMotion) {
-      introEl.style.display = 'none';
-      return;
-    }
-    const markEl = document.getElementById('introMark');
-    const verseEl = document.getElementById('introVerse');
-
-    requestAnimationFrame(() => markEl.classList.add('show'));
-    setTimeout(() => markEl.classList.remove('show'), 2100);
-    setTimeout(() => verseEl.classList.add('show'), 2600);
-    setTimeout(() => verseEl.classList.remove('show'), 5400);
-    setTimeout(() => {
-      introEl.classList.add('hide');
-      lastInteraction = Date.now();
-      map.flyTo({ center: [-30, 25], zoom: 1.6, duration: 4200, curve: 1.4, essential: true });
-    }, 5800);
-    setTimeout(() => {
-      introEl.style.display = 'none';
-      lastInteraction = Date.now();
-    }, 5800 + 4200 + 300);
-  }
-
-  map.on('load', playIntro);
-}
-
-init();
-</script>
-
-</body>
-</html>    width:9px; height:9px; border-radius:50%;
-    background:var(--red); border:1.5px solid var(--parchment);
-    box-shadow:0 0 0 0 rgba(165,55,43,0.55);
-    animation:pulse 2.6s ease-out infinite;
-  }
-  @keyframes pulse{
-    0%{ box-shadow:0 0 0 0 rgba(165,55,43,0.55); }
-    70%{ box-shadow:0 0 0 14px rgba(165,55,43,0); }
-    100%{ box-shadow:0 0 0 0 rgba(165,55,43,0); }
-  }
-  .pin.active .core{ background:var(--parchment); }
-
-  /* ---------- Panel ---------- */
-  .panel{
-    position:absolute; top:0; right:0; bottom:0;
-    width:min(420px,100vw);
-    background:linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
-    border-left:1px solid rgba(179,179,179,0.15);
-    box-shadow:-20px 0 50px rgba(0,0,0,0.35);
-    transform:translateX(100%);
-    transition:transform 0.55s cubic-bezier(0.19,1,0.22,1);
-    z-index:20;
-    display:flex; flex-direction:column;
-    color:var(--parchment);
-  }
-  .panel.open{ transform:translateX(0); }
-
-  .panel-scroll{ flex:1; overflow-y:auto; padding:clamp(28px,4vh,48px) clamp(24px,3vw,40px); }
-  .panel-scroll::-webkit-scrollbar{ width:5px; }
-  .panel-scroll::-webkit-scrollbar-thumb{ background:rgba(179,179,179,0.3); border-radius:3px; }
-
-  .panel-close{
-    position:absolute; top:20px; right:20px; z-index:2;
-    width:34px; height:34px; border-radius:50%;
-    border:1px solid rgba(179,179,179,0.35); background:rgba(15,42,66,0.6);
-    color:var(--parchment); font-size:16px; line-height:1;
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-  }
-  .panel-close:hover{ background:rgba(179,179,179,0.15); }
-
-  .eyebrow{ font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--silver); margin-bottom:12px; }
-  .p-name{ font-family:'Crimson Text', serif; font-weight:600; font-size:clamp(28px,4vw,36px); line-height:1.1; margin-bottom:6px; }
-  .p-role{ font-size:14px; color:var(--dust); margin-bottom:18px; }
-
-  .card-photos{ display:flex; gap:12px; margin-bottom:24px; }
-  .card-photo{ flex:1; min-width:0; border-radius:10px; overflow:hidden; border:1px solid rgba(179,179,179,0.25); background:rgba(0,0,0,0.15); }
-  .card-photo img{ width:100%; height:auto; display:block; }
-  .card-photo-label{ font-size:9.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--silver); padding:6px 9px; background:rgba(15,42,66,0.7); }
-
-  .p-divider{ width:52px; height:1px; background:var(--red); margin-bottom:20px; }
-  .p-prayer{ font-family:'Crimson Text', serif; font-style:italic; font-size:20px; line-height:1.5; margin-bottom:22px; }
-  .p-meta{ display:flex; gap:28px; font-size:12px; color:var(--silver); margin-bottom:34px; flex-wrap:wrap; }
-  .p-meta div span{ display:block; text-transform:uppercase; letter-spacing:0.16em; font-size:0.78em; color:var(--smoke); margin-bottom:4px; }
-
-  .section-label{ font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--silver); margin-bottom:16px; border-top:1px solid rgba(179,179,179,0.15); padding-top:22px; }
-  .letter{ padding:14px 0; border-bottom:1px solid rgba(179,179,179,0.12); }
-  .letter:last-child{ border-bottom:none; }
-  .letter-date{ font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--dust); margin-bottom:5px; }
-  .letter-title{ font-family:'Crimson Text', serif; font-weight:600; font-size:17px; margin-bottom:5px; }
-  .letter-excerpt{ font-size:13px; line-height:1.55; color:var(--silver); }
-
-  .notice{
-    margin-top:26px; padding:14px 16px; border:1px solid rgba(165,55,43,0.4);
-    background:rgba(165,55,43,0.08); font-size:11.5px; line-height:1.6; color:var(--silver);
-    letter-spacing:0.02em;
-  }
-  .notice b{ color:var(--parchment); }
-
-  /* ---------- Idle hint ---------- */
-  .hint{
-    position:absolute; left:50%; bottom:28px; transform:translateX(-50%);
-    font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--silver);
-    display:flex; align-items:center; gap:10px; z-index:5; pointer-events:none;
-    opacity:0.85;
-  }
-  .hint .dot{ width:5px; height:5px; border-radius:50%; background:var(--red); animation:blink 1.8s ease-in-out infinite; }
-  @keyframes blink{ 0%,100%{opacity:0.3;} 50%{opacity:1;} }
-
-  @media (prefers-reduced-motion: reduce){
-    .pin .core{ animation:none; }
-    .hint .dot{ animation:none; }
-  }
-
-  @media (max-width: 640px){
-    .panel{ width:100vw; top:auto; height:78vh; border-left:none; border-top:1px solid rgba(179,179,179,0.15); transform:translateY(100%); }
-    .panel.open{ transform:translateY(0); }
-  }
-
-  /* ---------- Cinematic intro ---------- */
-  .intro{
-    position:absolute; inset:0; z-index:50;
-    display:grid; place-items:center;
-    background:#0A1D2E;
-    padding:40px; text-align:center;
-    transition:opacity 1.4s ease;
-  }
-  .intro.hide{ opacity:0; pointer-events:none; }
-  .intro-mark, .intro-verse{
-    grid-area:1 / 1;
-    opacity:0; transform:translateY(14px);
-    transition:opacity 1.3s ease, transform 1.3s ease;
-    max-width:68ch;
-  }
-  .intro-mark.show, .intro-verse.show{ opacity:1; transform:translateY(0); }
-  .intro-mark{
-    font-family:'Crimson Text', serif; font-weight:600;
-    font-size:clamp(24px,3.6vw,44px); color:var(--parchment); letter-spacing:0.02em;
-  }
-  .intro-verse{
-    font-family:'Crimson Text', serif; font-style:italic;
-    font-size:clamp(19px,2.6vw,32px); line-height:1.55; color:var(--parchment);
-  }
-  .intro-ref{
-    display:block; margin-top:16px; font-family:'Poppins',sans-serif; font-style:normal;
-    font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--silver);
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .intro{ display:none; }
-  }
-</style>
-</head>
-<body>
-
-<div class="app">
-  <div id="map"></div>
-  <div class="atmosphere-glow"></div>
-  <div class="atmosphere-vignette"></div>
-  <div class="grain-overlay"></div>
-
-  <div class="header">
-    <div class="brand">
-      <span class="mark">Blessed Hope Baptist Church</span>
-      <span class="sub">World Missions</span>
-    </div>
-    <div class="stat" id="stat"></div>
-  </div>
-
-  <div class="hint" id="hint"><span class="dot"></span> Tap a marker to learn more</div>
-
-  <div class="panel" id="panel">
-    <button class="panel-close" id="panelClose">&times;</button>
-    <div class="panel-scroll" id="panelContent"></div>
-  </div>
-
-  <div class="intro" id="intro">
-    <div class="intro-mark" id="introMark">Blessed Hope Baptist Church</div>
-    <div class="intro-verse" id="introVerse">&ldquo;Go ye therefore, and teach all nations&hellip;&rdquo;<span class="intro-ref">Matthew 28:19</span></div>
-  </div>
-</div>
-
-<script>
-// Fallback used only if content/missionaries.json can't be fetched — e.g. when this
-// file is opened directly from disk (file://) rather than served by a real web server,
-// which blocks local file fetches for security reasons. On GitHub Pages this never triggers.
-const FALLBACK_DATA = {
-  sendingOrigin: [-78.1875, 42.9981],
-  missionaries: [
-    { id: "wf", sensitive: false, name: "John & Karen Whitfield", role: "Bible Translation", field: "West Africa", lng: -1.0232, lat: 7.9465, prayer: "Pray for endurance as the New Testament translation enters its final review stage.", sentSince: "2016", letters: [
-      { date: "July 2026", title: "Final Review Underway", excerpt: "The translation committee met for two weeks to review the Gospel of John. Pray for clarity as we finish the remaining books this year." },
-      { date: "March 2026", title: "A Season of Testing", excerpt: "Health challenges slowed our pace this quarter, but the team pressed on. Thank you for standing with us in prayer." }
-    ]},
-    { id: "ct", sensitive: false, name: "David & Anna Torres", role: "Orphan Care & Discipleship", field: "Central America", lng: -90.2308, lat: 15.7835, prayer: "Pray for the children's home expansion and for laborers to join the discipleship team.", sentSince: "2021", letters: [
-      { date: "June 2026", title: "Ground Broken", excerpt: "Construction on the second dormitory began this month. We rejoice to see the Lord provide through so many faithful churches." },
-      { date: "January 2026", title: "Five New Believers", excerpt: "Five young men from the discipleship program professed faith this quarter. Pray for their growth and baptism." }
-    ]},
-    { id: "sa", sensitive: true, name: "", role: "Church Planting — Access-Restricted Field", field: "Southeast Asia", lng: 100.9925, lat: 15.87, prayer: "Pray for open doors among unreached families and wisdom for a team laboring quietly in a sensitive region.", sentSince: "2019", letters: [
-      { date: "August 2026", title: "Steady Progress", excerpt: "A small gathering continues to meet. Details are kept general for the team's protection — please pray for continued favor and safety." }
-    ]}
-  ]
-};
-
-async function init() {
-  // ---- Load content — editable via /admin (Decap CMS) without touching code ----
-  let data;
-  try {
-    const res = await fetch('./content/missionaries.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error('fetch not ok');
-    data = await res.json();
-  } catch (err) {
-    console.warn('Could not fetch content/missionaries.json (expected if opened via file://). Using built-in fallback data.', err);
-    data = FALLBACK_DATA;
-  }
-  const missionaries = data.missionaries.map(m => ({ ...m, coords: [m.lng, m.lat] }));
-  const SENDING_ORIGIN = data.sendingOrigin || [-78.1875, 42.9981]; // Batavia, NY
-
-  document.getElementById('stat').innerHTML =
-    `${missionaries.length} Mission Field${missionaries.length === 1 ? '' : 's'}<br><b>Supported from Batavia, NY</b>`;
-
-  // ---- Great-circle arc generator ----
-  function greatCircleArc(start, end, points = 64) {
-    const toRad = d => d * Math.PI / 180;
-    const toDeg = r => r * 180 / Math.PI;
-    const [lon1, lat1] = start.map(toRad);
-    const [lon2, lat2] = end.map(toRad);
-    const d = 2 * Math.asin(Math.sqrt(
-      Math.pow(Math.sin((lat2 - lat1) / 2), 2) +
-      Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin((lon2 - lon1) / 2), 2)
-    ));
-    const coords = [];
-    for (let i = 0; i <= points; i++) {
-      const f = i / points;
-      const A = Math.sin((1 - f) * d) / Math.sin(d);
-      const B = Math.sin(f * d) / Math.sin(d);
-      const x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2);
-      const y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2);
-      const z = A * Math.sin(lat1) + B * Math.sin(lat2);
-      const lat = Math.atan2(z, Math.sqrt(x * x + y * y));
-      const lon = Math.atan2(y, x);
-      coords.push([toDeg(lon), toDeg(lat)]);
-    }
-    return coords;
-  }
-
-  const arcsGeoJSON = {
-    type: 'FeatureCollection',
-    features: missionaries.map(m => ({
-      type: 'Feature',
-      properties: {},
-      geometry: { type: 'LineString', coordinates: greatCircleArc(SENDING_ORIGIN, m.coords) }
-    }))
-  };
-
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // ---- Map init ----
-  const map = new maplibregl.Map({
-    container: 'map',
-    style: 'https://demotiles.maplibre.org/style.json',
-    projection: 'globe',
-    center: [-30, 25],
-    zoom: reduceMotion ? 1.6 : 0.15,
-    pitch: 0,
-    attributionControl: false,
-    dragRotate: true
-  });
-
-  map.scrollZoom.setWheelZoomRate(1/300);
-
-  map.on('style.load', () => {
-    const style = map.getStyle();
-    style.layers.forEach(layer => {
-      if (layer.type === 'background') map.setPaintProperty(layer.id, 'background-color', '#0F2A42');
-      if (layer.type === 'fill') map.setPaintProperty(layer.id, 'fill-color', '#28527A');
-      if (layer.type === 'line') map.setPaintProperty(layer.id, 'line-color', 'rgba(179,179,179,0.25)');
-      if (layer.type === 'symbol') {
-        if (layer.layout && layer.layout['text-field']) {
-          map.setPaintProperty(layer.id, 'text-color', '#D9D2C4');
-          map.setPaintProperty(layer.id, 'text-halo-color', '#0A1D2E');
-          map.setPaintProperty(layer.id, 'text-halo-width', 1.4);
-          map.setPaintProperty(layer.id, 'text-halo-blur', 0.3);
-          map.setPaintProperty(layer.id, 'text-opacity', 0.75);
-        }
-      }
-    });
-
-    map.addSource('sending-arcs', { type: 'geojson', data: arcsGeoJSON });
-    map.addLayer({
-      id: 'sending-arcs-line',
-      type: 'line',
-      source: 'sending-arcs',
-      paint: {
-        'line-color': '#A5372B',
-        'line-width': 1.3,
-        'line-opacity': 0.55,
-        'line-dasharray': [1, 2]
-      }
-    });
-
-    // ---- Living pulses traveling along each sending line ----
-    // Each missionary gets a small comet-like light that continuously travels
-    // the arc from Batavia to their field, staggered so they don't move in sync.
-    const arcPaths = missionaries.map(m => greatCircleArc(SENDING_ORIGIN, m.coords));
-    const TRAIL_LENGTH = 6;
-    const CYCLE_MS = 5200;
-    const phaseOffsets = missionaries.map((_, i) => (i / missionaries.length) * CYCLE_MS);
-    const startTime = performance.now();
-
-    map.addSource('pulse-trails', {
-      type: 'geojson',
-      data: { type: 'FeatureCollection', features: [] }
-    });
-    map.addLayer({
-      id: 'pulse-trails-layer',
-      type: 'circle',
-      source: 'pulse-trails',
-      paint: {
-        'circle-radius': ['interpolate', ['linear'], ['get', 'age'], 0, 5, 1, 1.5],
-        'circle-color': '#F3EEE4',
-        'circle-blur': 0.7,
-        'circle-opacity': ['interpolate', ['linear'], ['get', 'age'], 0, 0.9, 1, 0]
-      }
-    });
-
-    function animatePulses(now) {
-      const features = [];
-      arcPaths.forEach((path, mi) => {
-        const t = (((now - startTime) + phaseOffsets[mi]) % CYCLE_MS) / CYCLE_MS;
-        const headIndex = t * (path.length - 1);
-        for (let k = 0; k < TRAIL_LENGTH; k++) {
-          const idx = Math.round(headIndex) - k;
-          if (idx < 0 || idx >= path.length) continue;
-          features.push({
-            type: 'Feature',
-            properties: { age: k / TRAIL_LENGTH },
-            geometry: { type: 'Point', coordinates: path[idx] }
-          });
-        }
-      });
-      const src = map.getSource('pulse-trails');
-      if (src) src.setData({ type: 'FeatureCollection', features });
-      if (!reduceMotion) requestAnimationFrame(animatePulses);
-    }
-
-    if (!reduceMotion) requestAnimationFrame(animatePulses);
-
-    if (map.setFog) {
-      map.setFog({ range: [0.5, 10], color: '#0F2A42', 'horizon-blend': 0.1, 'high-color': '#1B4265', 'space-color': '#0A1D2E', 'star-intensity': 0 });
-    }
-  });
-
-  // ---- Markers ----
-  const panel = document.getElementById('panel');
-  const panelContent = document.getElementById('panelContent');
-  const hint = document.getElementById('hint');
-  let activeEl = null;
-
-  function renderPanel(m) {
-    const displayName = m.sensitive ? 'Field Team — Undisclosed' : m.name;
-    const lettersHtml = (m.letters || []).map(l => `
-      <div class="letter">
-        <div class="letter-date">${l.date}</div>
-        <div class="letter-title">${l.title}</div>
-        <div class="letter-excerpt">${l.excerpt}</div>
-      </div>
-    `).join('');
-
-    // Card images are only shown for non-sensitive entries, even if accidentally uploaded.
-    let cardsHtml = '';
-    if (!m.sensitive && (m.cardFront || m.cardBack)) {
-      cardsHtml = `<div class="card-photos">`;
-      if (m.cardFront) {
-        cardsHtml += `<div class="card-photo"><img src="${m.cardFront}" alt="${displayName} — card front" loading="lazy"><div class="card-photo-label">Front</div></div>`;
-      }
-      if (m.cardBack) {
-        cardsHtml += `<div class="card-photo"><img src="${m.cardBack}" alt="${displayName} — card back" loading="lazy"><div class="card-photo-label">Back</div></div>`;
-      }
-      cardsHtml += `</div>`;
-    }
-
-    panelContent.innerHTML = `
-      <div class="eyebrow">Serving In ${m.field}</div>
-      <div class="p-name">${displayName}</div>
-      <div class="p-role">${m.role}</div>
-      ${cardsHtml}
-      <div class="p-divider"></div>
-      <div class="p-prayer">&ldquo;${m.prayer}&rdquo;</div>
-      <div class="p-meta">
-        <div><span>Supported By BHBC</span>${m.sentSince}</div>
-        <div><span>Field</span>${m.field}</div>
-      </div>
-      ${m.sensitive ? `<div class="notice"><b>Access-restricted field.</b> Identifying details are intentionally limited to protect this team. Thank you for praying with discretion.</div>` : ''}
-      <div class="section-label">Letters &amp; Updates</div>
-      ${lettersHtml}
-    `;
-  }
-
-  missionaries.forEach(m => {
-    const el = document.createElement('div');
-    el.className = 'pin';
-    el.innerHTML = '<div class="core"></div>';
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (activeEl) activeEl.classList.remove('active');
-      el.classList.add('active');
-      activeEl = el;
-      renderPanel(m);
-      panel.classList.add('open');
-      hint.style.display = 'none';
-    });
-    new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(m.coords).addTo(map);
-  });
-
-  document.getElementById('panelClose').addEventListener('click', () => {
-    panel.classList.remove('open');
-    if (activeEl) activeEl.classList.remove('active');
-    activeEl = null;
-  });
-
-  // ---- Ambient idle rotation ----
-  let lastInteraction = Date.now();
-  const IDLE_DELAY = 4000;
-
-  ['mousedown','wheel','touchstart','dragstart'].forEach(evt =>
-    map.getCanvas().addEventListener(evt, () => { lastInteraction = Date.now(); })
-  );
-
-  if (!reduceMotion) {
+  function startVerseBanner() {
+    showVerse(verseIndex);
+    if (reduceMotion) return; // show one verse, skip the auto-cycling
     setInterval(() => {
-      if (!panel.classList.contains('open') && Date.now() - lastInteraction > IDLE_DELAY) {
-        const c = map.getCenter();
-        map.jumpTo({ center: [c.lng + 0.15, c.lat] });
-      }
-    }, 200);
+      verseTextEl.classList.remove('show');
+      setTimeout(() => {
+        verseIndex = (verseIndex + 1) % VERSES.length;
+        showVerse(verseIndex);
+      }, 1100);
+    }, 9000);
   }
 
-  // ---- Cinematic opening sequence ----
   function playIntro() {
     const introEl = document.getElementById('intro');
     if (reduceMotion) {
       introEl.style.display = 'none';
+      startVerseBanner();
       return;
     }
     const markEl = document.getElementById('introMark');
@@ -1496,317 +780,22 @@ async function init() {
     setTimeout(() => {
       introEl.style.display = 'none';
       lastInteraction = Date.now();
+      startVerseBanner();
     }, 5800 + 4200 + 300);
   }
 
-  map.on('load', playIntro);
-}
-
-init();
-</script>
-
-</body>
-</html>    transform:translateX(100%);
-    transition:transform 0.55s cubic-bezier(0.19,1,0.22,1);
-    z-index:20;
-    display:flex; flex-direction:column;
-    color:var(--parchment);
-  }
-  .panel.open{ transform:translateX(0); }
-
-  .panel-scroll{ flex:1; overflow-y:auto; padding:clamp(28px,4vh,48px) clamp(24px,3vw,40px); }
-  .panel-scroll::-webkit-scrollbar{ width:5px; }
-  .panel-scroll::-webkit-scrollbar-thumb{ background:rgba(179,179,179,0.3); border-radius:3px; }
-
-  .panel-close{
-    position:absolute; top:20px; right:20px; z-index:2;
-    width:34px; height:34px; border-radius:50%;
-    border:1px solid rgba(179,179,179,0.35); background:rgba(15,42,66,0.6);
-    color:var(--parchment); font-size:16px; line-height:1;
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-  }
-  .panel-close:hover{ background:rgba(179,179,179,0.15); }
-
-  .eyebrow{ font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--silver); margin-bottom:12px; }
-  .p-name{ font-family:'Crimson Text', serif; font-weight:600; font-size:clamp(28px,4vw,36px); line-height:1.1; margin-bottom:6px; }
-  .p-role{ font-size:14px; color:var(--dust); margin-bottom:18px; }
-
-  .card-photos{ display:flex; gap:12px; margin-bottom:24px; }
-  .card-photo{ flex:1; min-width:0; border-radius:10px; overflow:hidden; border:1px solid rgba(179,179,179,0.25); background:rgba(0,0,0,0.15); }
-  .card-photo img{ width:100%; height:auto; display:block; }
-  .card-photo-label{ font-size:9.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--silver); padding:6px 9px; background:rgba(15,42,66,0.7); }
-
-  .p-divider{ width:52px; height:1px; background:var(--red); margin-bottom:20px; }
-  .p-prayer{ font-family:'Cormorant Garamond', serif; font-style:italic; font-size:20px; line-height:1.5; margin-bottom:22px; white-space: pre-wrap; }
-  .p-meta{ display:flex; gap:28px; font-size:12px; color:var(--silver); margin-bottom:34px; flex-wrap:wrap; }
-  .p-meta div span{ display:block; text-transform:uppercase; letter-spacing:0.16em; font-size:0.78em; color:var(--smoke); margin-bottom:4px; }
-
-  .section-label{ font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--silver); margin-bottom:16px; border-top:1px solid rgba(179,179,179,0.15); padding-top:22px; }
-  .letter{ padding:14px 0; border-bottom:1px solid rgba(179,179,179,0.12); }
-  .letter:last-child{ border-bottom:none; }
-  .letter-date{ font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--dust); margin-bottom:5px; }
-  .letter-title{ font-family:'Crimson Text', serif; font-weight:600; font-size:17px; margin-bottom:5px; }
-  .letter-excerpt{ font-size:13px; line-height:1.55; color:var(--silver); white-space: pre-wrap; }
-
-
-  .notice{
-    margin-top:26px; padding:14px 16px; border:1px solid rgba(165,55,43,0.4);
-    background:rgba(165,55,43,0.08); font-size:11.5px; line-height:1.6; color:var(--silver);
-    letter-spacing:0.02em;
-  }
-  .notice b{ color:var(--parchment); }
-
-  /* ---------- Idle hint ---------- */
-  .hint{
-    position:absolute; left:50%; bottom:28px; transform:translateX(-50%);
-    font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--silver);
-    display:flex; align-items:center; gap:10px; z-index:5; pointer-events:none;
-    opacity:0.85;
-  }
-  .hint .dot{ width:5px; height:5px; border-radius:50%; background:var(--red); animation:blink 1.8s ease-in-out infinite; }
-  @keyframes blink{ 0%,100%{opacity:0.3;} 50%{opacity:1;} }
-
-  @media (prefers-reduced-motion: reduce){
-    .pin .core{ animation:none; }
-    .hint .dot{ animation:none; }
-  }
-
-  @media (max-width: 640px){
-    .panel{ width:100vw; top:auto; height:78vh; border-left:none; border-top:1px solid rgba(179,179,179,0.15); transform:translateY(100%); }
-    .panel.open{ transform:translateY(0); }
-  }
-</style>
-</head>
-<body>
-
-<div class="app">
-  <div id="map"></div>
-
-  <div class="header">
-    <div class="brand">
-      <span class="mark">Blessed Hope Baptist Church</span>
-      <span class="sub">World Missions</span>
-    </div>
-    <div class="stat" id="stat"></div>
-  </div>
-
-  <div class="hint" id="hint"><span class="dot"></span> Tap a marker to learn more</div>
-
-  <div class="panel" id="panel">
-    <button class="panel-close" id="panelClose">&times;</button>
-    <div class="panel-scroll" id="panelContent"></div>
-  </div>
-</div>
-
-<script>
-// Fallback used only if content/missionaries.json can't be fetched — e.g. when this
-// file is opened directly from disk (file://) rather than served by a real web server,
-// which blocks local file fetches for security reasons. On GitHub Pages this never triggers.
-const FALLBACK_DATA = {
-  sendingOrigin: [-78.1875, 42.9981],
-  missionaries: [
-    { id: "wf", sensitive: false, name: "John & Karen Whitfield", role: "Bible Translation", field: "West Africa", lng: -1.0232, lat: 7.9465, prayer: "Pray for endurance as the New Testament translation enters its final review stage.", sentSince: "2016", letters: [
-      { date: "July 2026", title: "Final Review Underway", excerpt: "The translation committee met for two weeks to review the Gospel of John. Pray for clarity as we finish the remaining books this year." },
-      { date: "March 2026", title: "A Season of Testing", excerpt: "Health challenges slowed our pace this quarter, but the team pressed on. Thank you for standing with us in prayer." }
-    ]},
-    { id: "ct", sensitive: false, name: "David & Anna Torres", role: "Orphan Care & Discipleship", field: "Central America", lng: -90.2308, lat: 15.7835, prayer: "Pray for the children's home expansion and for laborers to join the discipleship team.", sentSince: "2021", letters: [
-      { date: "June 2026", title: "Ground Broken", excerpt: "Construction on the second dormitory began this month. We rejoice to see the Lord provide through so many faithful churches." },
-      { date: "January 2026", title: "Five New Believers", excerpt: "Five young men from the discipleship program professed faith this quarter. Pray for their growth and baptism." }
-    ]},
-    { id: "sa", sensitive: true, name: "", role: "Church Planting — Access-Restricted Field", field: "Southeast Asia", lng: 100.9925, lat: 15.87, prayer: "Pray for open doors among unreached families and wisdom for a team laboring quietly in a sensitive region.", sentSince: "2019", letters: [
-      { date: "August 2026", title: "Steady Progress", excerpt: "A small gathering continues to meet. Details are kept general for the team's protection — please pray for continued favor and safety." }
-    ]}
-  ]
-};
-
-async function init() {
-  // ---- Load content — editable via /admin (Decap CMS) without touching code ----
-  let data;
-  try {
-    const res = await fetch('./content/missionaries.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error('fetch not ok');
-    data = await res.json();
-  } catch (err) {
-    console.warn('Could not fetch content/missionaries.json (expected if opened via file://). Using built-in fallback data.', err);
-    data = FALLBACK_DATA;
-  }
-  const missionaries = data.missionaries.map(m => ({ ...m, coords: [m.lng, m.lat] }));
-  const SENDING_ORIGIN = data.sendingOrigin || [-78.1875, 42.9981]; // Batavia, NY
-
-  document.getElementById('stat').innerHTML =
-    `${missionaries.length} Mission Field${missionaries.length === 1 ? '' : 's'}<br><b>Supported from Batavia, NY</b>`;
-
-  // ---- Great-circle arc generator ----
-  function greatCircleArc(start, end, points = 64) {
-    const toRad = d => d * Math.PI / 180;
-    const toDeg = r => r * 180 / Math.PI;
-    const [lon1, lat1] = start.map(toRad);
-    const [lon2, lat2] = end.map(toRad);
-    const d = 2 * Math.asin(Math.sqrt(
-      Math.pow(Math.sin((lat2 - lat1) / 2), 2) +
-      Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin((lon2 - lon1) / 2), 2)
-    ));
-    const coords = [];
-    for (let i = 0; i <= points; i++) {
-      const f = i / points;
-      const A = Math.sin((1 - f) * d) / Math.sin(d);
-      const B = Math.sin(f * d) / Math.sin(d);
-      const x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2);
-      const y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2);
-      const z = A * Math.sin(lat1) + B * Math.sin(lat2);
-      const lat = Math.atan2(z, Math.sqrt(x * x + y * y));
-      const lon = Math.atan2(y, x);
-      coords.push([toDeg(lon), toDeg(lat)]);
+  function startWhenFontsReady(cb) {
+    if (document.fonts && document.fonts.ready) {
+      Promise.race([
+        document.fonts.ready,
+        new Promise(resolve => setTimeout(resolve, 1500)) // safety net if fonts.ready never resolves
+      ]).then(cb);
+    } else {
+      cb();
     }
-    return coords;
   }
 
-  const arcsGeoJSON = {
-    type: 'FeatureCollection',
-    features: missionaries.map(m => ({
-      type: 'Feature',
-      properties: {},
-      geometry: { type: 'LineString', coordinates: greatCircleArc(SENDING_ORIGIN, m.coords) }
-    }))
-  };
-
-  // ---- Map init ----
-  const map = new maplibregl.Map({
-    container: 'map',
-    style: 'https://demotiles.maplibre.org/style.json',
-    projection: 'mercator',
-    center: [-30, 25],
-    zoom: 1.6,
-    pitch: 0,
-    attributionControl: false,
-    dragRotate: true
-  });
-
-  map.scrollZoom.setWheelZoomRate(1/300);
-
-  map.on('style.load', () => {
-    const style = map.getStyle();
-    style.layers.forEach(layer => {
-      if (layer.type === 'background') map.setPaintProperty(layer.id, 'background-color', '#0F2A42');
-      if (layer.type === 'fill') map.setPaintProperty(layer.id, 'fill-color', '#28527A');
-      if (layer.type === 'line') map.setPaintProperty(layer.id, 'line-color', 'rgba(179,179,179,0.25)');
-      if (layer.type === 'symbol') {
-        if (layer.layout && layer.layout['text-field']) {
-          map.setPaintProperty(layer.id, 'text-color', '#D9D2C4');
-          map.setPaintProperty(layer.id, 'text-halo-color', '#0A1D2E');
-          map.setPaintProperty(layer.id, 'text-halo-width', 1.4);
-          map.setPaintProperty(layer.id, 'text-halo-blur', 0.3);
-          map.setPaintProperty(layer.id, 'text-opacity', 0.75);
-        }
-      }
-    });
-
-    map.addSource('sending-arcs', { type: 'geojson', data: arcsGeoJSON });
-    map.addLayer({
-      id: 'sending-arcs-line',
-      type: 'line',
-      source: 'sending-arcs',
-      paint: {
-        'line-color': '#A5372B',
-        'line-width': 1.3,
-        'line-opacity': 0.55,
-        'line-dasharray': [1, 2]
-      }
-    });
-
-    // Fog/atmosphere shader removed — it's a globe-projection-only effect and has
-    // no purpose (and no GPU cost) under flat mercator projection.
-  });
-
-  // ---- Markers ----
-  const panel = document.getElementById('panel');
-  const panelContent = document.getElementById('panelContent');
-  const hint = document.getElementById('hint');
-  let activeEl = null;
-
-  function renderPanel(m) {
-    const displayName = m.sensitive ? 'Field Team — Undisclosed' : m.name;
-    const lettersHtml = (m.letters || []).map(l => `
-      <div class="letter">
-        <div class="letter-date">${l.date}</div>
-        <div class="letter-title">${l.title}</div>
-        <div class="letter-excerpt">${l.excerpt}</div>
-      </div>
-    `).join('');
-
-    // Card images are only shown for non-sensitive entries, even if accidentally uploaded.
-    let cardsHtml = '';
-    if (!m.sensitive && (m.cardFront || m.cardBack)) {
-      cardsHtml = `<div class="card-photos">`;
-      if (m.cardFront) {
-        cardsHtml += `<div class="card-photo"><img src="${m.cardFront}" alt="${displayName} — card front" loading="lazy"><div class="card-photo-label">Front</div></div>`;
-      }
-      if (m.cardBack) {
-        cardsHtml += `<div class="card-photo"><img src="${m.cardBack}" alt="${displayName} — card back" loading="lazy"><div class="card-photo-label">Back</div></div>`;
-      }
-      cardsHtml += `</div>`;
-    }
-
-    panelContent.innerHTML = `
-      <div class="eyebrow">Serving In ${m.field}</div>
-      <div class="p-name">${displayName}</div>
-      <div class="p-role">${m.role}</div>
-      ${cardsHtml}
-      <div class="p-divider"></div>
-      <div class="p-prayer">&ldquo;${m.prayer}&rdquo;</div>
-      <div class="p-meta">
-        <div><span>Supported By BHBC</span>${m.sentSince}</div>
-        <div><span>Field</span>${m.field}</div>
-      </div>
-      ${m.sensitive ? `<div class="notice"><b>Access-restricted field.</b> Identifying details are intentionally limited to protect this team. Thank you for praying with discretion.</div>` : ''}
-      <div class="section-label">Letters &amp; Updates</div>
-      ${lettersHtml}
-    `;
-  }
-
-  missionaries.forEach(m => {
-    const el = document.createElement('div');
-    el.className = 'pin';
-    el.innerHTML = '<div class="core"></div>';
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (activeEl) activeEl.classList.remove('active');
-      el.classList.add('active');
-      activeEl = el;
-      renderPanel(m);
-      panel.classList.add('open');
-      hint.style.display = 'none';
-    });
-    new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(m.coords).addTo(map);
-  });
-
-  document.getElementById('panelClose').addEventListener('click', () => {
-    panel.classList.remove('open');
-    if (activeEl) activeEl.classList.remove('active');
-    activeEl = null;
-  });
-
-  // ---- Ambient idle rotation ----
-  // Throttled to ~5fps (200ms interval) with a bigger step per tick, instead of
-  // requestAnimationFrame at 60fps. Same visual rotation speed, ~92% fewer draw
-  // calls — reduces sustained GPU load that was likely triggering WebGL flashes
-  // on the kiosk's older Intel graphics.
-  let lastInteraction = Date.now();
-  const IDLE_DELAY = 4000;
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  ['mousedown','wheel','touchstart','dragstart'].forEach(evt =>
-    map.getCanvas().addEventListener(evt, () => { lastInteraction = Date.now(); })
-  );
-
-  if (!reduceMotion) {
-    setInterval(() => {
-      if (!panel.classList.contains('open') && Date.now() - lastInteraction > IDLE_DELAY) {
-        const c = map.getCenter();
-        map.jumpTo({ center: [c.lng + 0.15, c.lat] });
-      }
-    }, 200);
-  }
+  map.on('load', () => startWhenFontsReady(playIntro));
 }
 
 init();
