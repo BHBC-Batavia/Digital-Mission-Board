@@ -5,6 +5,119 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
   <title>BHBC Mission Board — Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,600;0,700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /*
+      BHBC editor theme — applied via broad, tag-level overrides with !important.
+      Decap CMS's own internal chrome (sidebar, header, some layout wrappers) uses
+      auto-generated class names that can change on any update, so this deliberately
+      targets stable, native HTML elements (body, input, button, etc.) rather than
+      guessing at those — the approach that actually holds up over time.
+    */
+    :root{
+      --bhbc-navy:#1B4265;
+      --bhbc-navy-deep:#123049;
+      --bhbc-silver:#B3B3B3;
+      --bhbc-smoke:#767676;
+      --bhbc-dust:#A19586;
+      --bhbc-bg:#F4F2EF;
+    }
+
+    html, body{
+      background: radial-gradient(1200px 800px at 15% 0%, #FBFAF8 0%, var(--bhbc-bg) 55%, #EDE9E4 100%) fixed !important;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif !important;
+      color: var(--bhbc-navy-deep) !important;
+    }
+
+    /* Headings inside the CMS pick up the site's serif for brand continuity */
+    h1, h2, h3{
+      font-family: 'Crimson Text', Georgia, serif !important;
+      color: var(--bhbc-navy-deep) !important;
+      font-weight: 700 !important;
+    }
+
+    /* ---- Frosted "liquid glass" panels ---- */
+    /* Applies to the broad container elements Decap renders content into */
+    div[class*="Card"], div[class*="Panel"], div[class*="Sidebar"],
+    div[class*="Collection"], div[class*="Editor"], nav, aside{
+      background: rgba(255,255,255,0.6) !important;
+      backdrop-filter: blur(18px) saturate(160%) !important;
+      -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
+      border: 1px solid rgba(255,255,255,0.5) !important;
+    }
+
+    /* ---- Inputs, textareas, selects ---- */
+    input, textarea, select{
+      font-family: 'Poppins', sans-serif !important;
+      background: rgba(255,255,255,0.75) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      border: 1px solid rgba(27,66,101,0.18) !important;
+      border-radius: 12px !important;
+      color: var(--bhbc-navy-deep) !important;
+      padding: 10px 14px !important;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
+    }
+    input:focus, textarea:focus, select:focus{
+      outline: none !important;
+      border-color: var(--bhbc-navy) !important;
+      box-shadow: 0 0 0 4px rgba(27,66,101,0.14) !important;
+    }
+    label{
+      font-family: 'Poppins', sans-serif !important;
+      font-weight: 500 !important;
+      color: var(--bhbc-navy-deep) !important;
+      letter-spacing: 0.01em !important;
+    }
+
+    /* ---- Buttons — pill-shaped, navy, soft lift on hover ---- */
+    button, a[role="button"]{
+      font-family: 'Poppins', sans-serif !important;
+      font-weight: 500 !important;
+      background: var(--bhbc-navy) !important;
+      color: #fff !important;
+      border: none !important;
+      border-radius: 999px !important;
+      padding: 9px 20px !important;
+      box-shadow: 0 2px 10px rgba(27,66,101,0.25) !important;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease !important;
+    }
+    button:hover, a[role="button"]:hover{
+      transform: translateY(-1px) !important;
+      box-shadow: 0 6px 16px rgba(27,66,101,0.32) !important;
+      background: var(--bhbc-navy-deep) !important;
+    }
+    button:active{ transform: translateY(0) !important; }
+
+    /* Destructive actions (delete/remove) get a quieter, muted treatment */
+    button[class*="elete"], button[class*="emove"]{
+      background: transparent !important;
+      color: #A5372B !important;
+      box-shadow: none !important;
+      border: 1px solid rgba(165,55,43,0.35) !important;
+    }
+    button[class*="elete"]:hover, button[class*="emove"]:hover{
+      background: rgba(165,55,43,0.08) !important;
+    }
+
+    /* Toggle/checkbox accent color to match brand navy instead of default */
+    input[type="checkbox"]{ accent-color: var(--bhbc-navy) !important; }
+
+    /* Scrollbar polish (WebKit) */
+    ::-webkit-scrollbar{ width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb{ background: rgba(27,66,101,0.25); border-radius: 10px; }
+    ::-webkit-scrollbar-track{ background: transparent; }
+
+    /* Hints under fields — softened so they read as gentle guidance, not clutter */
+    div[class*="Hint"], p[class*="Hint"]{
+      color: var(--bhbc-smoke) !important;
+      font-style: italic !important;
+      font-size: 0.85em !important;
+    }
+  </style>
 </head>
 <body>
   <!-- Include the script that builds the page and powers Decap CMS -->
