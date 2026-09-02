@@ -211,6 +211,24 @@
       "field": "Mindanao, Philippines (specific city not yet assigned), Asia",
       "id": "cowling",
       "lat": 7.9
+    },
+    {
+      "sentSince": "2025",
+      "lng": 144.7937,
+      "prayer": "Pray for the young men preaching and leading the Bible Club ministry, for the church plant in Yona as they prepare for door-to-door outreach, and for the many military families rotating in and out of their congregation.",
+      "name": "Steven & Sherry Barnes",
+      "letters": [
+        {
+          "date": "January 2026",
+          "title": "January Update 2026",
+          "excerpt": "Dear Pastor,\n\nWhat a privilege to serve the Lord here in Guam. It's amazing to think that God would let all of us be co-laborers with Christ in the ministry of the Lord.\n\nReflecting over the past few months and looking towards the New Year, I am reminded of the goodness and grace of the Lord.\n\nWe baptized nine last Sunday in Tumon Bay. Thank the Lord for the warm waters of the Pacific in this region! We had over thirty visitors attend the baptism. While I was giving the gospel, several tourists wandered by and heard the message. What an opportunity!\n\nOn New Year's Eve, four of our young men preached. During that service, a twenty-eight year old man was saved. Please pray for our young preachers. Our youth are a blessing! They continue to be the backbone of our Bible Club ministry which reaches all over this island. Twenty-two of our teenagers are currently involved in this ministry.\n\nSherry continues to cook meals and offer hospitality every Sunday afternoon for the military. Navy, Air Force, Marine, and Army personnel have been to our house for food and fellowship. We absolutely love these folks! My respect is to those who have raised their hands and \"signed on the dotted line\" as a willing sacrifice for our country. PCS season is here as four of our families and several of our singles will be headed to other places of military service. The Lord has allowed two families to join in the last three weeks. The rotation continues.\n\nOur international meal next week will reflect the diversity in our church. We will enjoy Filipino, Micronesian, Chamorro, and other Asian foods, along with a big pot of Louisiana gumbo.\n\nThe church plant in Yona continues to grow and prosper. In two weeks, we look forward to some extensive door-knocking in the area. Pray for the work in Yona.\n\nThe Lord is good to us! We praise the Lord for the good health that He has given us to get His work accomplished.\n\nSteven Barnes,\nMissionary to Guam"
+        }
+      ],
+      "role": "Church Planting",
+      "sensitive": false,
+      "field": "Guam, Micronesia",
+      "id": "steven_barnes",
+      "lat": 13.4443
     }
   ]
 }
