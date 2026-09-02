@@ -55,6 +55,12 @@ collections:
                 widget: "string"
                 hint: "Keep this general (e.g. 'Southeast Asia') for access-restricted fields."
 
+              - label: "Continent"
+                name: "continent"
+                widget: "select"
+                options: ["Africa", "Asia", "Europe", "North America", "South America", "Oceania", "Antarctica"]
+                hint: "Used for filtering/labeling. Field/Region should just be the city and country — put the continent here instead of appending it to that text."
+
               - label: "Longitude"
                 name: "lng"
                 widget: "number"
