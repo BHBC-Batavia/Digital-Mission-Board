@@ -245,7 +245,7 @@ async function init() {
   const map = new maplibregl.Map({
     container: 'map',
     style: 'https://demotiles.maplibre.org/style.json',
-    projection: 'globe',
+    projection: 'mercator',
     center: [-30, 25],
     zoom: 1.6,
     pitch: 0,
@@ -285,11 +285,8 @@ async function init() {
       }
     });
 
-    // Lightened fog/atmosphere shader — star field removed and horizon-blend reduced
-    // to cut sustained GPU load on older Intel graphics (helps with WebGL flash/context-loss).
-    if (map.setFog) {
-      map.setFog({ range: [0.5, 10], color: '#0F2A42', 'horizon-blend': 0.1, 'high-color': '#1B4265', 'space-color': '#0A1D2E', 'star-intensity': 0 });
-    }
+    // Fog/atmosphere shader removed — it's a globe-projection-only effect and has
+    // no purpose (and no GPU cost) under flat mercator projection.
   });
 
   // ---- Markers ----
