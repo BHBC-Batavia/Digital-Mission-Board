@@ -92,6 +92,16 @@
     }
     button:active{ transform: translateY(0) !important; }
 
+    /* Icons inside buttons need to be forced white — otherwise a dark icon
+       meant for a light button background becomes invisible on navy */
+    button svg, button svg *{
+      fill: #fff !important;
+      stroke: #fff !important;
+    }
+    button i, button [class*="icon" i]{
+      color: #fff !important;
+    }
+
     /* Destructive actions (delete/remove) get a quieter, muted treatment */
     button[class*="elete"], button[class*="emove"]{
       background: transparent !important;
