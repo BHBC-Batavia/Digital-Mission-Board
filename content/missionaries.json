@@ -20,7 +20,7 @@
       "sensitive": false,
       "cardBack": "/images/missionaries/back.jpg",
       "cardFront": "/images/missionaries/front.jpg",
-      "field": "Bridgeport, Connecticut, USA",
+      "field": "Bridgeport, Connecticut, United States, North America",
       "id": "Frazer",
       "lat": 41.1865
     },
@@ -40,7 +40,7 @@
       "sensitive": false,
       "cardBack": "/images/missionaries/scott_back.jpg",
       "cardFront": "/images/missionaries/scott_front.jpg",
-      "field": "Baja California, Mexico",
+      "field": "Baja California, Mexico, North America",
       "id": "scott",
       "lat": 30.8406
     },
@@ -60,7 +60,7 @@
       "sensitive": false,
       "cardBack": "/images/missionaries/sutton_back.jpg",
       "cardFront": "/images/missionaries/sutton_front.jpg",
-      "field": "Point Hope, Alaska, USA",
+      "field": "Point Hope, Alaska, United States, North America",
       "id": "sutton",
       "lat": 68.3487
     },
@@ -80,7 +80,7 @@
       "sensitive": false,
       "cardBack": "/images/missionaries/rardin_back.jpg",
       "cardFront": "/images/missionaries/rardin_front.jpg",
-      "field": "Bourbonnais, Illinois, USA",
+      "field": "Bourbonnais, Illinois, United States, North America",
       "id": "rardin",
       "lat": 41.1367
     },
@@ -105,7 +105,7 @@
       "sensitive": false,
       "cardBack": "/images/missionaries/kosiorek_back.jpg",
       "cardFront": "/images/missionaries/kosiorek_front.jpg",
-      "field": "Shelbyville, Tennessee, USA",
+      "field": "Shelbyville, Tennessee, United States, North America",
       "id": "kosiorek",
       "lat": 35.4834
     },
@@ -125,7 +125,7 @@
       "sensitive": false,
       "cardBack": "/images/missionaries/ulyse_back.jpg",
       "cardFront": "/images/missionaries/ulyse_front.jpg",
-      "field": "Long Island, New York, USA",
+      "field": "Farmingdale, New York, United States, North America",
       "id": "ulyse",
       "lat": 40.7326
     },
@@ -160,7 +160,7 @@
       "sensitive": false,
       "cardBack": "/images/missionaries/saltzman_back.jpg",
       "cardFront": "/images/missionaries/saltzman_front.jpg",
-      "field": "Teshio, Hokkaido, Japan",
+      "field": "Teshio, Hokkaido, Japan, Asia",
       "id": "saltzman",
       "lat": 44.8833
     },
@@ -190,7 +190,7 @@
       "sensitive": false,
       "cardBack": "/images/missionaries/story_back.jpg",
       "cardFront": "/images/missionaries/story_front.jpg",
-      "field": "Italy, USA",
+      "field": "Italy, (specific city not yet assigned), Europe",
       "id": "story",
       "lat": 42.5
     },
@@ -208,7 +208,7 @@
       ],
       "role": "Church Planting",
       "sensitive": false,
-      "field": "Mindanao, Philippines",
+      "field": "Mindanao, Philippines (specific city not yet assigned), Asia",
       "id": "cowling",
       "lat": 7.9
     }
