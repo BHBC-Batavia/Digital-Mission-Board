@@ -119,6 +119,27 @@ collections:
                 fields:
                   - { label: "Date", name: "date", widget: "string", hint: "e.g. August 2026" }
                   - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Update Text", name: "excerpt", widget: "text" }                widget: "image"
+                required: false
+                hint: "A missions card image or family photo. Leave blank for Access-Restricted missionaries — a photo can identify someone even without a name."
+
+              - label: "Card Back (optional)"
+                name: "cardBack"
+                widget: "image"
+                required: false
+                hint: "Only fill in if you have a second image (e.g. the back of a printed prayer card)."
+
+              - label: "Supported By BHBC Since"
+                name: "sentSince"
+                widget: "string"
+
+              - label: "Letters & Updates"
+                name: "letters"
+                widget: "list"
+                summary: "{{fields.date}} — {{fields.title}}"
+                fields:
+                  - { label: "Date", name: "date", widget: "string", hint: "e.g. August 2026" }
+                  - { label: "Title", name: "title", widget: "string" }
                   - { label: "Update Text", name: "excerpt", widget: "text" }                name: "cardFront"
                 widget: "image"
                 required: false
