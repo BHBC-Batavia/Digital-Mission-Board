@@ -7,12 +7,17 @@ backend:
 # Keeps published content live immediately; no PR review step for a single editor.
 publish_mode: simple
 
+# Adds a "View Site" link in the top bar so it's obvious how to see the live result.
+site_url: https://missions.blessedhopebaptist.church
+display_url: https://missions.blessedhopebaptist.church
+
 media_folder: "images/missionaries"
 public_folder: "/images/missionaries"
 
 collections:
   - name: "missions"
     label: "Mission Board"
+    description: "Update missionary info, prayer points, and letters here. Changes go live within a minute or two of publishing."
     files:
       - file: "content/missionaries.json"
         label: "Missionaries"
@@ -55,12 +60,6 @@ collections:
                 widget: "string"
                 hint: "Keep this general (e.g. 'Southeast Asia') for access-restricted fields."
 
-              - label: "Continent"
-                name: "continent"
-                widget: "select"
-                options: ["Africa", "Asia", "Europe", "North America", "South America", "Oceania", "Antarctica"]
-                hint: "Used for filtering/labeling. Field/Region should just be the city and country — put the continent here instead of appending it to that text."
-
               - label: "Longitude"
                 name: "lng"
                 widget: "number"
@@ -78,6 +77,28 @@ collections:
 
               - label: "Card Front (optional)"
                 name: "cardFront"
+                widget: "image"
+                required: false
+                hint: "A missions card image or family photo. Leave blank for Access-Restricted missionaries — a photo can identify someone even without a name."
+
+              - label: "Card Back (optional)"
+                name: "cardBack"
+                widget: "image"
+                required: false
+                hint: "Only fill in if you have a second image (e.g. the back of a printed prayer card)."
+
+              - label: "Supported By BHBC Since"
+                name: "sentSince"
+                widget: "string"
+
+              - label: "Letters & Updates"
+                name: "letters"
+                widget: "list"
+                summary: "{{fields.date}} — {{fields.title}}"
+                fields:
+                  - { label: "Date", name: "date", widget: "string", hint: "e.g. August 2026" }
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Update Text", name: "excerpt", widget: "text" }                name: "cardFront"
                 widget: "image"
                 required: false
                 hint: "A missions card image or family photo. Leave blank for Access-Restricted missionaries — a photo can identify someone even without a name."
