@@ -237,7 +237,7 @@
       "role": "Church Planting",
       "sensitive": false,
       "field": "Guam, Micronesia",
-      "id": "steven_barnes",
+      "id": "barnes_steven",
       "lat": 13.4443
     },
     {
@@ -296,6 +296,25 @@
       "field": "Navojoa, Sonora, Mexico",
       "id": "dorr",
       "lat": 27.0706
+    },
+    {
+      "sentSince": "2025",
+      "lng": -71.4548,
+      "prayer": "Pray for the New England Gospel Initiative and weekly door-to-door evangelism, for the upcoming Bridgeport Gospel Crusade in August, for grandsons Andrew and Lucas's health challenges, and for provision of a travel trailer for ministry volunteers.",
+      "name": "John & Teresa Barnes",
+      "letters": [
+        {
+          "date": "April 2026",
+          "title": "April 2026 Update",
+          "excerpt": "Dear Praying friends,\n\nBless the LORD O my soul: and all that is within me, bless his holy name (Psalm 103:1)! I look forward to the opportunity quarterly to write and send our prayer letter. First, because God continues to be incredibly good to us. Second, because we love each of you and can never thank you enough for partnering in prayer and support for us and with us. And last, because I am confident many of you will take our new prayer requests and pray with us. THANK YOU!\n\nTwo highlights come to mind in sharing some of the blessings from the first quarter of this year. The first is our first international Gospel Crusade in Lima, Peru. Over thirty people came from six different churches around America to help us. We rejoice that over 200 people trusted Christ as Saviour during our week-long campaign! There were so many blessings; I would be glad to send a video that my home church made if you would like to see it.\n\nThe second highlight is that I had the wonderful privilege to be a part of two of my sons' ordinations in the past couple months. I rejoice in being a part of young preachers' ordinations, but to preach two of my sons' ordinations was truly a highlight of my entire ministry. My wife and I are humbled at God's goodness and grace.\n\nSPECIFIC PRAYER REQUESTS:\n1. New England Gospel Initiative - We began this major project here in April. Please pray specifically for churches to get on board to be committed to WEEKLY door-to-door evangelism. Please pray for the college men evangelism internship starting in the middle of May. Please pray for the plan to go to churches around New England and commit to soulwinning to encourage and help churches.\n2. New England Baptist Teen Camp - June 22-26, we will be having our 15th annual NEBTC! Brother Caleb Garraway will be our main speaker. Please pray that God will work mightily in the lives of the precious young people of the Northeast.\n3. Two Grandsons - health - Please continue to pray for Andrew and Lucas and their incredible health challenges. Every church we go to, people remind us of their love and prayers. That encourages us more than you know.\n4. Bridgeport Gospel Crusade - August 17-21, we will be having our next Gospel Crusade. A location for the tent crusade is our greatest need, along with additional finances, housing for those who come and help, and for churches around Connecticut and the rest of New England to come labor with us.\n5. NEW NEED - Travel trailer/fifth wheel - We are at the place in our ministry that we desperately need a travel trailer that we can use for many people around the country that are coming to help us with our Crusades and Gospel Initiative. If you know of one in good condition, or would be interested in helping us purchase one, please let me know.\n\nServant and friend,\n\nJohn Barnes\nEvangelist"
+        }
+      ],
+      "continent": "North America",
+      "role": "Evangelist — Northeast for Christ Ministries",
+      "sensitive": false,
+      "field": "Manchester, New Hampshire, United States",
+      "id": "barnes_john",
+      "lat": 42.9956
     }
   ]
 }
