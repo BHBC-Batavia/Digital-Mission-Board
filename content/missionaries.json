@@ -158,6 +158,8 @@
       ],
       "role": "Church Planting",
       "sensitive": false,
+      "cardBack": "/images/missionaries/saltzman_back.jpg",
+      "cardFront": "/images/missionaries/saltzman_front.jpg",
       "field": "Teshio, Hokkaido, Japan",
       "id": "saltzman",
       "lat": 44.8833
