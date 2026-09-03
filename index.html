@@ -250,7 +250,8 @@
 
   @media (max-width:640px){
     .qr-corner{ display:none; } /* redundant on the device you're already viewing it on */
-    .verse-banner{ bottom:16px; max-width:88vw; }
+    .verse-banner{ bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); max-width:88vw; }
+    .logo-corner{ bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); }
   }
 
   /* ---------- Logo corner (bottom-right) ---------- */
@@ -796,21 +797,21 @@ async function init() {
     const verseEl = document.getElementById('introVerse');
 
     requestAnimationFrame(() => markEl.classList.add('show'));
-    setTimeout(() => markEl.classList.remove('show'), 2100);
-    setTimeout(() => verseEl.classList.add('show'), 2600);
-    setTimeout(() => verseEl.classList.remove('show'), 5400);
+    setTimeout(() => markEl.classList.remove('show'), 2900);
+    setTimeout(() => verseEl.classList.add('show'), 3400);
+    setTimeout(() => verseEl.classList.remove('show'), 7500);
     setTimeout(() => {
       introEl.classList.add('hide');
       lastInteraction = Date.now();
       map.flyTo({ center: [-30, 25], zoom: 1.6, duration: 4200, curve: 1.4, essential: true });
-    }, 5800);
+    }, 7900);
     setTimeout(() => {
       introEl.style.display = 'none';
       lastInteraction = Date.now();
       idleHandled = true;      // skip the snap-back — we just flew in ourselves
       rotationActive = true;   // start spinning right away, no 30s wait
       startVerseBanner();
-    }, 5800 + 4200 + 300);
+    }, 7900 + 4200 + 300);
   }
 
   function startWhenFontsReady(cb) {
