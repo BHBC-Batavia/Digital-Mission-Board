@@ -32,7 +32,7 @@ collections:
           - label: "Missionaries"
             name: "missionaries"
             widget: "list"
-            summary: "{{fields.name}}{{fields.field}}"
+            summary: "{{fields.name}} — {{fields.field}}"
             fields:
               - label: "Internal ID"
                 name: "id"
