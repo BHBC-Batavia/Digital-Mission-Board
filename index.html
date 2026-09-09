@@ -34,17 +34,14 @@
     pointer-events:none;
   }
   .header *{ pointer-events:auto; }
-  .brand{ display:flex; flex-direction:column; }
-  .brand .mark{
-    font-family:'Crimson Text', serif; font-weight:600;
-    font-size:clamp(18px,2vw,24px); color:var(--parchment); letter-spacing:0.01em;
-  }
+  .brand{ display:flex; flex-direction:column; align-items:center; }
+  .brand-logo{ width:clamp(64px,7vw,88px); height:auto; display:block; }
   .brand .sub{
     font-size:clamp(9px,0.8vw,11px); letter-spacing:0.28em; text-transform:uppercase;
-    color:var(--silver); margin-top:3px;
+    color:var(--silver); margin-top:6px; text-align:center;
   }
-  .stat-ribbon{ display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:baseline; gap:14px; text-align:right; max-width:260px; }
-  .stat-item{ display:flex; flex-direction:column; align-items:flex-end; }
+  .stat-ribbon{ display:flex; flex-wrap:wrap; align-items:baseline; gap:14px; text-align:left; max-width:220px; }
+  .stat-item{ display:flex; flex-direction:column; align-items:flex-start; }
   .stat-num{
     font-family:'Crimson Text', serif; font-weight:600;
     font-size:clamp(20px,2.4vw,30px); color:var(--parchment); line-height:1;
@@ -53,11 +50,10 @@
     font-size:clamp(8px,0.7vw,10px); letter-spacing:0.16em; text-transform:uppercase;
     color:var(--silver); margin-top:3px;
   }
-  .stat-divider{ width:1px; height:26px; background:rgba(179,179,179,0.25); }
   .stat-sub{
     width:100%; flex-basis:100%;
     font-size:clamp(9px,0.8vw,11px); letter-spacing:0.12em; text-transform:uppercase;
-    color:var(--silver); margin-top:6px; text-align:right;
+    color:var(--silver); margin-top:6px; text-align:left;
   }
 
   /* ---------- Map ---------- */
@@ -238,25 +234,19 @@
 
   @media (max-width:640px){
     .verse-banner{ bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); max-width:88vw; }
-    .logo-corner{ bottom:calc(env(safe-area-inset-bottom, 0px) + 110px); }
+    .report-btn{ bottom:calc(env(safe-area-inset-bottom, 0px) + 110px); }
   }
 
-  /* ---------- Logo corner (bottom-right) ---------- */
-  .logo-corner{
-    position:absolute; right:20px; bottom:20px; z-index:5;
-    opacity:0.8; pointer-events:none;
-    width:clamp(70px,7vw,96px);
-  }
-  .logo-corner img{ width:100%; height:auto; display:block; }
-
-  /* ---------- Report a problem ---------- */
+  /* ---------- Report a problem (round icon, bottom-right) ---------- */
   .report-btn{
-    position:absolute; left:20px; bottom:20px; z-index:5;
+    position:absolute; right:20px; bottom:20px; z-index:5;
+    width:38px; height:38px; border-radius:50%;
     background:rgba(15,42,66,0.55); color:var(--silver);
-    border:1px solid rgba(179,179,179,0.25); border-radius:999px;
-    padding:8px 16px; font-family:'Poppins', sans-serif; font-size:10.5px;
-    letter-spacing:0.08em; cursor:pointer; backdrop-filter:blur(6px);
-    -webkit-backdrop-filter:blur(6px); transition:background 0.2s ease, color 0.2s ease;
+    border:1px solid rgba(179,179,179,0.3);
+    font-family:'Poppins', sans-serif; font-size:15px; font-weight:600;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    transition:background 0.2s ease, color 0.2s ease;
   }
   .report-btn:hover{ background:rgba(15,42,66,0.8); color:var(--parchment); }
 
@@ -290,10 +280,6 @@
     letter-spacing:0.04em;
   }
   .report-back-btn:hover{ color:var(--parchment); }
-
-  @media (max-width:640px){
-    .report-btn{ bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); }
-  }
 
   /* ---------- Cinematic intro ---------- */
   .intro{
@@ -339,15 +325,13 @@
   <div class="grain-overlay"></div>
 
   <div class="header">
-    <div class="brand">
-      <span class="mark">Blessed Hope Baptist Church</span>
-      <span class="sub">World Missions</span>
-    </div>
     <div class="stat-ribbon" id="statRibbon">
       <div class="stat-item"><span class="stat-num" id="statFields">0</span><span class="stat-label">Mission Fields</span></div>
-      <div class="stat-divider"></div>
-      <div class="stat-item"><span class="stat-num" id="statYears">0</span><span class="stat-label" id="statYearsLabel">Years Supported</span></div>
       <div class="stat-sub">Supported from Batavia, NY</div>
+    </div>
+    <div class="brand">
+      <img class="brand-logo" src="./images/bhbc-logo-white.png" alt="Blessed Hope Baptist Church">
+      <span class="sub">World Missions</span>
     </div>
   </div>
 
@@ -362,11 +346,7 @@
     <div class="verse-text" id="verseText"></div>
   </div>
 
-  <div class="logo-corner">
-    <img src="./images/bhbc-logo-white.png" alt="Blessed Hope Baptist Church">
-  </div>
-
-  <button class="report-btn" id="reportBtn">Report a problem</button>
+  <button class="report-btn" id="reportBtn" aria-label="Report a problem">?</button>
 
   <div class="report-overlay" id="reportOverlay">
     <div class="report-card">
@@ -432,19 +412,6 @@ async function init() {
   document.getElementsByClassName('stat-item')[0].querySelector('.stat-label').textContent =
     `Mission Field${missionaries.length === 1 ? '' : 's'}`;
 
-  // BHBC's mission-support program began March 2025 — this counts whole years
-  // elapsed since then, and updates itself automatically as time passes.
-  const MISSIONS_START = new Date(2025, 2, 1); // March 1, 2025
-  const now = new Date();
-  let yearsSupported = now.getFullYear() - MISSIONS_START.getFullYear();
-  const beforeAnniversary =
-    now.getMonth() < MISSIONS_START.getMonth() ||
-    (now.getMonth() === MISSIONS_START.getMonth() && now.getDate() < MISSIONS_START.getDate());
-  if (beforeAnniversary) yearsSupported--;
-  yearsSupported = Math.max(0, yearsSupported);
-  document.getElementById('statYearsLabel').textContent =
-    `Year${yearsSupported === 1 ? '' : 's'} Supported`;
-
   function animateCount(el, target, duration) {
     if (reduceMotion) { el.textContent = target; return; }
     const start = performance.now();
@@ -457,7 +424,6 @@ async function init() {
     requestAnimationFrame(step);
   }
   animateCount(document.getElementById('statFields'), missionaries.length, 1200);
-  animateCount(document.getElementById('statYears'), yearsSupported, 1400);
 
   // ---- Great-circle arc generator ----
   function greatCircleArc(start, end, points = 64) {
