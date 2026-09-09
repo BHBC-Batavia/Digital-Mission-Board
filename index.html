@@ -10,7 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.12.0/maplibre-gl.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.12.0/maplibre-gl.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root{
     --navy:#1B4265;
@@ -117,7 +116,10 @@
   }
   .panel.open{ transform:translateX(0); }
 
-  .panel-scroll{ flex:1; overflow-y:auto; padding:clamp(28px,4vh,48px) clamp(24px,3vw,40px); }
+  .panel-scroll{
+    flex:1; overflow-y:auto;
+    padding:68px clamp(24px,3vw,40px) clamp(28px,4vh,48px);
+  }
   .panel-scroll::-webkit-scrollbar{ width:5px; }
   .panel-scroll::-webkit-scrollbar-thumb{ background:rgba(179,179,179,0.3); border-radius:3px; }
 
@@ -220,11 +222,13 @@
     border:1px solid rgba(179,179,179,0.18);
     border-radius:14px;
     box-shadow:0 8px 24px rgba(0,0,0,0.25);
+    overflow:hidden;
+    transition:height 0.7s cubic-bezier(0.65,0,0.35,1);
   }
   .verse-text{
     font-family:'Crimson Text', serif; font-style:italic;
     font-size:clamp(15px,1.6vw,19px); line-height:1.5;
-    color:var(--parchment); opacity:0; transition:opacity 1.1s ease;
+    color:var(--parchment); opacity:0; transition:opacity 0.9s ease;
   }
   .verse-text.show{ opacity:1; }
   .verse-text .verse-ref{
@@ -232,26 +236,9 @@
     font-size:10.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--silver);
   }
 
-  /* ---------- QR corner ---------- */
-  .qr-corner{
-    position:absolute; left:20px; bottom:20px; z-index:5;
-    display:flex; flex-direction:column; align-items:center; gap:6px;
-    opacity:0.92;
-  }
-  .qr-box{
-    width:76px; height:76px; padding:6px; border-radius:8px;
-    background:var(--parchment); box-shadow:0 6px 20px rgba(0,0,0,0.35);
-  }
-  .qr-box img, .qr-box canvas{ width:100% !important; height:100% !important; }
-  .qr-label{
-    font-size:8.5px; letter-spacing:0.14em; text-transform:uppercase;
-    color:var(--silver); text-align:center; max-width:90px; line-height:1.4;
-  }
-
   @media (max-width:640px){
-    .qr-corner{ display:none; } /* redundant on the device you're already viewing it on */
     .verse-banner{ bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); max-width:88vw; }
-    .logo-corner{ bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); }
+    .logo-corner{ bottom:calc(env(safe-area-inset-bottom, 0px) + 110px); }
   }
 
   /* ---------- Logo corner (bottom-right) ---------- */
@@ -261,6 +248,52 @@
     width:clamp(70px,7vw,96px);
   }
   .logo-corner img{ width:100%; height:auto; display:block; }
+
+  /* ---------- Report a problem ---------- */
+  .report-btn{
+    position:absolute; left:20px; bottom:20px; z-index:5;
+    background:rgba(15,42,66,0.55); color:var(--silver);
+    border:1px solid rgba(179,179,179,0.25); border-radius:999px;
+    padding:8px 16px; font-family:'Poppins', sans-serif; font-size:10.5px;
+    letter-spacing:0.08em; cursor:pointer; backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px); transition:background 0.2s ease, color 0.2s ease;
+  }
+  .report-btn:hover{ background:rgba(15,42,66,0.8); color:var(--parchment); }
+
+  .report-overlay{
+    position:absolute; inset:0; z-index:65;
+    background:rgba(6,14,22,0.92);
+    display:none; align-items:center; justify-content:center; padding:32px;
+  }
+  .report-overlay.open{ display:flex; }
+  .report-card{
+    width:min(420px,90vw);
+    background:linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
+    border:1px solid rgba(179,179,179,0.2); border-radius:16px;
+    padding:32px 28px; text-align:center; color:var(--parchment);
+    box-shadow:0 20px 50px rgba(0,0,0,0.4);
+  }
+  .report-card h2{
+    font-family:'Crimson Text', serif; font-weight:700; font-size:22px; margin-bottom:12px;
+  }
+  .report-card p{
+    font-size:13px; line-height:1.6; color:var(--silver); margin-bottom:22px;
+  }
+  .report-email-btn{
+    display:block; text-decoration:none;
+    background:var(--parchment); color:var(--navy-deep); font-weight:600;
+    font-size:13.5px; padding:12px 18px; border-radius:999px; margin-bottom:16px;
+  }
+  .report-back-btn{
+    background:none; border:none; color:var(--silver);
+    font-family:'Poppins', sans-serif; font-size:12px; cursor:pointer;
+    letter-spacing:0.04em;
+  }
+  .report-back-btn:hover{ color:var(--parchment); }
+
+  @media (max-width:640px){
+    .report-btn{ bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); }
+  }
 
   /* ---------- Cinematic intro ---------- */
   .intro{
@@ -329,13 +362,19 @@
     <div class="verse-text" id="verseText"></div>
   </div>
 
-  <div class="qr-corner" id="qrCorner">
-    <div class="qr-box" id="qrBox"></div>
-    <div class="qr-label">Visit on your phone</div>
-  </div>
-
   <div class="logo-corner">
     <img src="./images/bhbc-logo-white.png" alt="Blessed Hope Baptist Church">
+  </div>
+
+  <button class="report-btn" id="reportBtn">Report a problem</button>
+
+  <div class="report-overlay" id="reportOverlay">
+    <div class="report-card">
+      <h2>Report a Problem</h2>
+      <p>Notice something not working right, or information that needs updating? Send a quick email and let me know what you saw.</p>
+      <a class="report-email-btn" href="mailto:elijah@blessedhopebaptist.church?subject=Mission%20Board%20Issue">Email elijah@blessedhopebaptist.church</a>
+      <button class="report-back-btn" id="reportBack">&#8249; Back to Mission Board</button>
+    </div>
   </div>
 
   <div class="intro" id="intro">
@@ -419,16 +458,6 @@ async function init() {
   }
   animateCount(document.getElementById('statFields'), missionaries.length, 1200);
   animateCount(document.getElementById('statYears'), yearsSupported, 1400);
-
-  if (window.QRCode) {
-    new QRCode(document.getElementById('qrBox'), {
-      text: window.location.origin + window.location.pathname,
-      width: 64,
-      height: 64,
-      colorDark: '#0F2A42',
-      colorLight: '#F3EEE4'
-    });
-  }
 
   // ---- Great-circle arc generator ----
   function greatCircleArc(start, end, points = 64) {
@@ -673,6 +702,12 @@ async function init() {
     touchStartX = null;
   });
 
+  // ---- Report a Problem overlay ----
+  const reportOverlay = document.getElementById('reportOverlay');
+  document.getElementById('reportBtn').addEventListener('click', () => reportOverlay.classList.add('open'));
+  document.getElementById('reportBack').addEventListener('click', () => reportOverlay.classList.remove('open'));
+  reportOverlay.addEventListener('click', (e) => { if (e.target === reportOverlay) reportOverlay.classList.remove('open'); });
+
   const markerRecords = [];
   let currentIndex = -1;
 
@@ -769,20 +804,54 @@ async function init() {
   ];
   let verseIndex = 0;
   const verseTextEl = document.getElementById('verseText');
-  function showVerse(i) {
+  const verseBannerEl = document.getElementById('verseBanner');
+
+  function renderVerseContent(i) {
     const v = VERSES[i];
     verseTextEl.innerHTML = `&ldquo;${v.text}&rdquo;<span class="verse-ref">${v.ref}</span>`;
+  }
+  function showVerse(i) {
+    renderVerseContent(i);
     requestAnimationFrame(() => verseTextEl.classList.add('show'));
+  }
+  // Measures the banner's natural height for a given content, without a visible jump.
+  function measureNaturalHeight() {
+    const prev = verseBannerEl.style.height;
+    verseBannerEl.style.transition = 'none';
+    verseBannerEl.style.height = 'auto';
+    const h = verseBannerEl.scrollHeight;
+    verseBannerEl.style.height = prev;
+    // Force reflow so the browser registers the temporary change before we restore the transition.
+    void verseBannerEl.offsetHeight;
+    verseBannerEl.style.transition = '';
+    return h;
+  }
+  function transitionToVerse(nextIndex) {
+    // 1. Lock the banner at its current height so the resize has a starting point to animate from.
+    verseBannerEl.style.height = verseBannerEl.offsetHeight + 'px';
+    // 2. Fade the current verse out.
+    verseTextEl.classList.remove('show');
+
+    setTimeout(() => {
+      // 3. Swap the text while invisible, then measure how tall the new verse wants to be.
+      renderVerseContent(nextIndex);
+      const targetHeight = measureNaturalHeight();
+      // 4. Animate the box to that height.
+      requestAnimationFrame(() => {
+        verseBannerEl.style.height = targetHeight + 'px';
+      });
+      // 5. Once the resize has mostly settled, fade the new verse in.
+      setTimeout(() => {
+        verseTextEl.classList.add('show');
+      }, 550);
+    }, 900);
   }
   function startVerseBanner() {
     showVerse(verseIndex);
     if (reduceMotion) return; // show one verse, skip the auto-cycling
     setInterval(() => {
-      verseTextEl.classList.remove('show');
-      setTimeout(() => {
-        verseIndex = (verseIndex + 1) % VERSES.length;
-        showVerse(verseIndex);
-      }, 1100);
+      verseIndex = (verseIndex + 1) % VERSES.length;
+      transitionToVerse(verseIndex);
     }, 9000);
   }
 
