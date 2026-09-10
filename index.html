@@ -206,7 +206,8 @@
   /* ---------- Verse banner (bottom) ---------- */
   .verse-banner{
     position:absolute; left:50%; bottom:22px; transform:translateX(-50%);
-    z-index:5; pointer-events:none; text-align:center; max-width:min(78vw,560px);
+    z-index:5; pointer-events:none; text-align:center;
+    max-width:min(78vw,560px);
     padding:14px 28px;
     background:rgba(10,29,46,0.55);
     backdrop-filter:blur(10px);
@@ -215,7 +216,7 @@
     border-radius:14px;
     box-shadow:0 8px 24px rgba(0,0,0,0.25);
     overflow:hidden;
-    transition:height 1.6s cubic-bezier(0.45,0,0.15,1);
+    transition:width 1.1s cubic-bezier(0.45,0,0.15,1), height 1.1s cubic-bezier(0.45,0,0.15,1);
   }
   .verse-text{
     font-family:'Crimson Text', serif; font-style:italic;
@@ -228,11 +229,6 @@
     font-size:10.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--silver);
   }
 
-  @media (max-width:640px){
-    .verse-banner{ bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); max-width:88vw; }
-    .report-btn{ bottom:calc(env(safe-area-inset-bottom, 0px) + 220px); }
-  }
-
   /* ---------- Report a problem (round icon, bottom-right) ---------- */
   .report-btn{
     position:absolute; right:20px; bottom:20px; z-index:5;
@@ -243,6 +239,11 @@
     display:flex; align-items:center; justify-content:center;
     cursor:pointer; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
     transition:background 0.2s ease, color 0.2s ease;
+  }
+
+  @media (max-width:640px){
+    .verse-banner{ bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); max-width:88vw; }
+    .report-btn{ bottom:calc(env(safe-area-inset-bottom, 0px) + 220px); }
   }
   .report-btn:hover{ background:rgba(15,42,66,0.8); color:var(--parchment); }
 
@@ -776,36 +777,46 @@ async function init() {
     renderVerseContent(i);
     requestAnimationFrame(() => verseTextEl.classList.add('show'));
   }
-  // Measures the banner's natural height for a given content, without a visible jump.
-  function measureNaturalHeight() {
-    const prev = verseBannerEl.style.height;
+  // Measures the banner's natural width AND height for a given piece of content,
+  // without ever letting the resize itself be visible (transitions disabled during the measurement).
+  function measureNaturalSize() {
+    const prevWidth = verseBannerEl.style.width;
+    const prevHeight = verseBannerEl.style.height;
     verseBannerEl.style.transition = 'none';
+    verseBannerEl.style.width = 'auto';
     verseBannerEl.style.height = 'auto';
-    const h = verseBannerEl.scrollHeight;
-    verseBannerEl.style.height = prev;
+    const size = { width: verseBannerEl.scrollWidth, height: verseBannerEl.scrollHeight };
+    verseBannerEl.style.width = prevWidth;
+    verseBannerEl.style.height = prevHeight;
     // Force reflow so the browser registers the temporary change before we restore the transition.
     void verseBannerEl.offsetHeight;
     verseBannerEl.style.transition = '';
-    return h;
+    return size;
   }
   function transitionToVerse(nextIndex) {
-    // 1. Lock the banner at its current height so the resize has a starting point to animate from.
+    // 1. Lock the banner at its current width and height so the animation has a fixed starting point.
+    verseBannerEl.style.width = verseBannerEl.offsetWidth + 'px';
     verseBannerEl.style.height = verseBannerEl.offsetHeight + 'px';
     // 2. Fade the current verse out, slowly.
     verseTextEl.classList.remove('show');
 
     setTimeout(() => {
-      // 3. Swap the text while invisible, then measure how tall the new verse wants to be.
+      // 3. Swap the text while invisible, then measure the new verse's natural footprint.
       renderVerseContent(nextIndex);
-      const targetHeight = measureNaturalHeight();
-      // 4. Animate the box to that height, gently.
+      const target = measureNaturalSize();
+
+      // 4. Stretch the width first...
       requestAnimationFrame(() => {
-        verseBannerEl.style.height = targetHeight + 'px';
+        verseBannerEl.style.width = target.width + 'px';
       });
-      // 5. Once the resize has mostly settled, fade the new verse in, slowly.
+      // 5. ...then, once the width has mostly finished, pull the height to match.
+      setTimeout(() => {
+        verseBannerEl.style.height = target.height + 'px';
+      }, 900);
+      // 6. Once both dimensions have settled, fade the new verse in.
       setTimeout(() => {
         verseTextEl.classList.add('show');
-      }, 1500);
+      }, 900 + 900);
     }, 2000);
   }
   function startVerseBanner() {
