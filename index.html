@@ -238,8 +238,10 @@
     font-family:'Poppins', sans-serif; font-size:15px; font-weight:600;
     display:flex; align-items:center; justify-content:center;
     cursor:pointer; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
-    transition:background 0.2s ease, color 0.2s ease;
+    opacity:0;
+    transition:background 0.2s ease, color 0.2s ease, opacity 1s ease;
   }
+  .report-btn.show{ opacity:1; }
 
   @media (max-width:640px){
     .verse-banner{ bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); max-width:88vw; }
@@ -768,6 +770,7 @@ async function init() {
   let verseIndex = 0;
   const verseTextEl = document.getElementById('verseText');
   const verseBannerEl = document.getElementById('verseBanner');
+  const reportBtnEl = document.getElementById('reportBtn');
 
   function renderVerseContent(i) {
     const v = VERSES[i];
@@ -819,8 +822,81 @@ async function init() {
       }, 900 + 900);
     }, 2000);
   }
+  // Plays the one-time opening choreography: the verse banner starts as a blank
+  // dot mirroring the report button, fades in alongside it, slides to bottom-center,
+  // then grows its width and finally its height before the first verse fades in.
+  function playVerseIntro() {
+    const DOT = 38;
+
+    if (reduceMotion) {
+      reportBtnEl.classList.add('show');
+      showVerse(verseIndex);
+      return;
+    }
+
+    // 1. Snap (no transition) into a hidden, blank dot at the banner's normal bottom-center anchor.
+    verseBannerEl.style.transition = 'none';
+    verseBannerEl.style.width = DOT + 'px';
+    verseBannerEl.style.height = DOT + 'px';
+    verseBannerEl.style.padding = '0px';
+    verseBannerEl.style.borderRadius = (DOT / 2) + 'px';
+    verseBannerEl.style.opacity = '0';
+
+    // Mirror the report button's inset from its edge (right:20px) onto the left edge,
+    // then express the difference as an extra transform offset on top of the centered anchor.
+    const edgeInset = 20;
+    const centeredLeftEdge = (window.innerWidth / 2) - (DOT / 2);
+    const deltaX = edgeInset - centeredLeftEdge; // negative — shifts the dot left of center
+    verseBannerEl.style.transform = `translateX(-50%) translateX(${deltaX}px)`;
+
+    // Force a reflow so the browser commits this starting state before transitions re-engage.
+    void verseBannerEl.offsetHeight;
+
+    // 2. Fade the verse dot and the report button in together.
+    verseBannerEl.style.transition = 'opacity 1s ease';
+    requestAnimationFrame(() => {
+      verseBannerEl.style.opacity = '1';
+      reportBtnEl.classList.add('show');
+    });
+
+    // 3. Once visible, swiftly slide the dot from bottom-left to bottom-center.
+    setTimeout(() => {
+      verseBannerEl.style.transition = 'transform 0.7s cubic-bezier(0.22,1,0.36,1)';
+      verseBannerEl.style.transform = 'translateX(-50%)';
+    }, 1100);
+
+    // 4. Once centered, grow the width first...
+    setTimeout(() => {
+      renderVerseContent(verseIndex);
+      // Apply final padding/radius instantly — invisible while the box is still dot-sized and empty.
+      verseBannerEl.style.transition = 'none';
+      verseBannerEl.style.padding = '14px 28px';
+      const target = measureNaturalSize();
+      void verseBannerEl.offsetHeight;
+
+      verseBannerEl.style.transition =
+        'width 1.1s cubic-bezier(0.45,0,0.15,1), border-radius 1.1s cubic-bezier(0.45,0,0.15,1)';
+      requestAnimationFrame(() => {
+        verseBannerEl.style.width = target.width + 'px';
+        verseBannerEl.style.borderRadius = '14px';
+      });
+
+      // 5. ...then, once the width has mostly finished, pull the height to match.
+      setTimeout(() => {
+        verseBannerEl.style.transition = 'height 1.1s cubic-bezier(0.45,0,0.15,1)';
+        verseBannerEl.style.height = target.height + 'px';
+      }, 900);
+
+      // 6. Once both dimensions have settled, fade the first verse in and hand off
+      //    to the stylesheet's own width/height transition for every swap after this.
+      setTimeout(() => {
+        verseBannerEl.style.transition = '';
+        verseTextEl.classList.add('show');
+      }, 900 + 900);
+    }, 1100 + 700);
+  }
   function startVerseBanner() {
-    showVerse(verseIndex);
+    playVerseIntro();
     if (reduceMotion) return; // show one verse, skip the auto-cycling
     setInterval(() => {
       verseIndex = (verseIndex + 1) % VERSES.length;
