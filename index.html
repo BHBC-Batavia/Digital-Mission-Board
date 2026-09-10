@@ -40,20 +40,16 @@
     font-size:clamp(9px,0.8vw,11px); letter-spacing:0.28em; text-transform:uppercase;
     color:var(--silver); margin-top:6px; text-align:center;
   }
-  .stat-ribbon{ display:flex; flex-wrap:wrap; align-items:baseline; gap:14px; text-align:left; max-width:220px; }
-  .stat-item{ display:flex; flex-direction:column; align-items:flex-start; }
-  .stat-num{
-    font-family:'Crimson Text', serif; font-weight:600;
-    font-size:clamp(20px,2.4vw,30px); color:var(--parchment); line-height:1;
+  .stat-ribbon{ display:flex; flex-direction:column; align-items:flex-start; max-width:240px; }
+  .stat-line{
+    display:flex; align-items:baseline; gap:8px; white-space:nowrap;
+    font-family:'Crimson Text', serif; font-weight:700; color:var(--parchment);
   }
-  .stat-label{
-    font-size:clamp(8px,0.7vw,10px); letter-spacing:0.16em; text-transform:uppercase;
-    color:var(--silver); margin-top:3px;
-  }
+  .stat-num{ font-size:clamp(22px,2.6vw,32px); line-height:1; }
+  .stat-fields-label{ font-size:clamp(14px,1.6vw,19px); }
   .stat-sub{
-    width:100%; flex-basis:100%;
-    font-size:clamp(9px,0.8vw,11px); letter-spacing:0.12em; text-transform:uppercase;
-    color:var(--silver); margin-top:6px; text-align:left;
+    font-size:clamp(11px,1vw,13px); letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--silver); margin-top:7px; text-align:left;
   }
 
   /* ---------- Map ---------- */
@@ -219,12 +215,12 @@
     border-radius:14px;
     box-shadow:0 8px 24px rgba(0,0,0,0.25);
     overflow:hidden;
-    transition:height 0.7s cubic-bezier(0.65,0,0.35,1);
+    transition:height 1.6s cubic-bezier(0.45,0,0.15,1);
   }
   .verse-text{
     font-family:'Crimson Text', serif; font-style:italic;
     font-size:clamp(15px,1.6vw,19px); line-height:1.5;
-    color:var(--parchment); opacity:0; transition:opacity 0.9s ease;
+    color:var(--parchment); opacity:0; transition:opacity 2s ease;
   }
   .verse-text.show{ opacity:1; }
   .verse-text .verse-ref{
@@ -234,7 +230,7 @@
 
   @media (max-width:640px){
     .verse-banner{ bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); max-width:88vw; }
-    .report-btn{ bottom:calc(env(safe-area-inset-bottom, 0px) + 150px); }
+    .report-btn{ bottom:calc(env(safe-area-inset-bottom, 0px) + 220px); }
   }
 
   /* ---------- Report a problem (round icon, bottom-right) ---------- */
@@ -326,7 +322,7 @@
 
   <div class="header">
     <div class="stat-ribbon" id="statRibbon">
-      <div class="stat-item"><span class="stat-num" id="statFields">0</span><span class="stat-label">Mission Fields</span></div>
+      <div class="stat-line"><span class="stat-num" id="statFields">0</span><span class="stat-fields-label">Mission Fields</span></div>
       <div class="stat-sub">Supported from Batavia, NY</div>
     </div>
     <div class="brand">
@@ -409,7 +405,7 @@ async function init() {
     .sort((a, b) => (a.id || '').localeCompare(b.id || ''));
   const SENDING_ORIGIN = data.sendingOrigin || [-78.1875, 42.9981]; // Batavia, NY
 
-  document.getElementsByClassName('stat-item')[0].querySelector('.stat-label').textContent =
+  document.querySelector('.stat-fields-label').textContent =
     `Mission Field${missionaries.length === 1 ? '' : 's'}`;
 
   function animateCount(el, target, duration) {
@@ -795,22 +791,22 @@ async function init() {
   function transitionToVerse(nextIndex) {
     // 1. Lock the banner at its current height so the resize has a starting point to animate from.
     verseBannerEl.style.height = verseBannerEl.offsetHeight + 'px';
-    // 2. Fade the current verse out.
+    // 2. Fade the current verse out, slowly.
     verseTextEl.classList.remove('show');
 
     setTimeout(() => {
       // 3. Swap the text while invisible, then measure how tall the new verse wants to be.
       renderVerseContent(nextIndex);
       const targetHeight = measureNaturalHeight();
-      // 4. Animate the box to that height.
+      // 4. Animate the box to that height, gently.
       requestAnimationFrame(() => {
         verseBannerEl.style.height = targetHeight + 'px';
       });
-      // 5. Once the resize has mostly settled, fade the new verse in.
+      // 5. Once the resize has mostly settled, fade the new verse in, slowly.
       setTimeout(() => {
         verseTextEl.classList.add('show');
-      }, 550);
-    }, 900);
+      }, 1500);
+    }, 2000);
   }
   function startVerseBanner() {
     showVerse(verseIndex);
@@ -818,7 +814,7 @@ async function init() {
     setInterval(() => {
       verseIndex = (verseIndex + 1) % VERSES.length;
       transitionToVerse(verseIndex);
-    }, 9000);
+    }, 12000);
   }
 
   function playIntro() {
